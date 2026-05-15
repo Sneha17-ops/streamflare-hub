@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Entertainment Hub</title>
+
+    <!-- Link Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Link Tailwind CSS (via CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar Placeholder -->
+    <header id="header"></header>
+
+
+
+    <!-- Hero Section -->
+    <section class="hero bg-gray-800 text-white h-screen flex flex-col justify-between px-10 pt-20 relative">
+
+        <!-- Middle Section - Movie Title, Description, and Buttons on the Left -->
+        <div class="flex w-full mt-10">
+            <!-- Left Section - Movie Title, Description, and Buttons -->
+            <div class="absolute top-80 left-10 w-1/2 text-left">
+                <h2 class="text-4xl font-bold mb-4">Venom: The Last Dance</h2>
+                <p class="w-3/4 mb-6">
+                    Eddie and Venom, on the run, face pursuit from both worlds. As circumstances tighten, they're
+                    compelled to make a heart-wrenching choice that could mark the end of their symbiotic partnership!!
+                </p>
+
+                <!-- Buttons (Placed Directly Below Description) -->
+                <div class="flex space-x-6">
+                    <!-- Play Button with Red Hover Effect -->
+                    <button
+                        class="bg-white text-gray-800 px-8 py-4 text-lg rounded-lg flex items-center space-x-3 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                        <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <span>Play</span>
+                    </button>
+
+                    <!-- More Info Button with White Hover Effect -->
+                    <button
+                        class="bg-transparent border-2 border-white text-white px-8 py-4 text-lg rounded-lg flex items-center space-x-3 transform transition-all duration-300  hover:scale-105 hover:shadow-lg">
+                        <svg class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm-1-13h2v2h-2zm0 4h2v6h-2z" />
+                        </svg>
+                        <span>More Info</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Content Sections -->
+    <main id="content" class="container my-5">
+
+        <!-- Movies Section -->
+        <section id="movies" class="my-10">
+            <h2 class="text-4xl font-bold text-center my-5 text-white">Movies</h2>
+            <!-- Top 10 Movies Carousel -->
+            <section id="top-movies-carousel" class="my-10">
+                <h2 class="text-4xl font-bold text-center my-5 text-white">Top 10 Movies This Week</h2>
+
+                <div id="movieCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- Carousel Items (One movie per item for single-movie scroll) -->
+                        <div class="carousel-item active">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie1.webp" class="carousel-item-img" alt="Movie 1">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie2.jpg" class="carousel-item-img" alt="Movie 2">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie3.webp" class="carousel-item-img" alt="Movie 3">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie4.webp" class="carousel-item-img" alt="Movie 4">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie5.jpg" class="carousel-item-img" alt="Movie 5">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie6.webp" class="carousel-item-img" alt="Movie 6">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie7.webp" class="carousel-item-img" alt="Movie 7">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie8.webp" class="carousel-item-img" alt="Movie 8">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie9.webp" class="carousel-item-img" alt="Movie 9">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="movie-wrapper">
+                                <img src="assets/movie10.webp" class="carousel-item-img" alt="Movie 10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Controls -->
+                    <a class="carousel-control-prev" href="#movieCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon bg-gray-800 rounded-full p-3" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#movieCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon bg-gray-800 rounded-full p-3" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </section>
+
+
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 ">
+                <!-- Movie Card 1 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie1.webp'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">The Buckingham Murders</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            A grieving cop who loses her child to murder and moves to another town where she's tasked
+                            with investigating the disappearance of a missing child. Exploring themes of trauma, grief,
+                            the immigrant experience and our need for closure.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 2 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie2.jpg'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">Do Patti</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            A gripping thriller that delves into the lives of twin sisters and a
+                            determined police inspector investigating an attempted murder. Set in the misty hills of
+                            Uttarakhand, it weaves themes of love, betrayal, and justice into a compelling narrative.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 3 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie3.webp'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">Devara</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            Devara: Part 1 is a 2024 Indian Telugu-language action drama film written. A mighty sea
+                            warrior takes a
+                            violent stand against the criminal deeds of his village. Years later, his mild-mannered son
+                            walks a path of his own.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 4 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie4.webp'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">It Ends With Us</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            Adapted from the Colleen Hoover novel, Lily overcomes a traumatic childhood to embark on a
+                            new life. A chance meeting with a neurosurgeon sparks a connection.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Card 5 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie7.webp'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">Khel Khel Mein</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            An unhappily married couple and five friends decide to share every call or text they get
+                            over one night with each other. There's nothing to hide — right?
+                        </div>
+                    </div>
+                </div>
+                <!-- Movie Card 6 -->
+                <div class="movie-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg group transition-all duration-500"
+                    style="background-image: url('assets/movie8.webp'); height: auto; width: auto;">
+                    <!-- Blurred Background Layer -->
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+
+                    <!-- Content Overlay -->
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="absolute bottom-0 left-5 text-2xl font-bold z-20">Bhool Bhulaiya 2</h3>
+
+                        <!-- Icons Container -->
+                        <div
+                            class="flex space-x-4 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <!-- Dropdown Arrow Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <!-- Plus Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <!-- Heart Icon -->
+                            <button
+                                class="text-white p-4 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-300">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Movie Description (Visible on Hover) -->
+                        <div
+                            class="movie-description opacity-0 group-hover:opacity-100 mt-3 text-sm leading-relaxed transition-opacity duration-300">
+                            When strangers Reet and Ruhan cross paths, their journey leads to an abandoned mansion and a
+                            dreaded spirit who has been trapped for 18 years.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+           <script>
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "login.html";
+  }
+</script>
+
+
+            <!-- Add this JS to handle the dropdown click event -->
+            <script>
+                // Function to toggle the visibility of the movie description
+                function toggleDescription(id) {
+                    const description = document.getElementById(id);
+                    if (description.classList.contains('hidden')) {
+                        description.classList.remove('hidden');
+                        description.classList.add('block');
+                    } else {
+                        description.classList.remove('block');
+                        description.classList.add('hidden');
+                    }
+                }
+            </script>
+
+
+        </section>
+
+        <!-- Music Section -->
+        <section id="music" class="my-10">
+            <h2 class="text-4xl font-bold text-center my-5 text-white">Music</h2>
+
+            <section id="top-music-carousel" class="my-10">
+                <h2 class="text-4xl font-bold text-center my-5 text-white">Top 10 Music This Week</h2>
+
+                <div id="musicCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <!-- Carousel Items (One music per item for single-music scroll) -->
+                        <div class="carousel-item active">
+                            <div class="music-wrapper">
+                                <img src="assets/m1.jpg" class="carousel-item-img" alt="Music 1">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m2.jpg" class="carousel-item-img" alt="Music 2">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m3.jpg" class="carousel-item-img" alt="Music 3">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m4.jpg" class="carousel-item-img" alt="Music 4">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m5.jpg" class="carousel-item-img" alt="Music 5">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m6.jpg" class="carousel-item-img" alt="Music 6">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m7.jpg" class="carousel-item-img" alt="Music 7">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m8.jpg" class="carousel-item-img" alt="Music 8">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m9.jpg" class="carousel-item-img" alt="Music 9">
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="music-wrapper">
+                                <img src="assets/m10.jpg" class="carousel-item-img" alt="Music 10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Controls -->
+                    <a class="carousel-control-prev" href="#musicCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon bg-gray-800 rounded-full p-3" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#musicCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon bg-gray-800 rounded-full p-3" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </section>
+
+
+
+
+            <!-- Music Albums Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Initial 5 Music Albums -->
+                <div class="music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105"
+                    style="background-image: url('assets/m1.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Pyaar Bhi Jhootha</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m1.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105"
+                    style="background-image: url('assets/m2.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Aayi Nai</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m2.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105"
+                    style="background-image: url('assets/m3.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Jo Tum Mere Ho</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m3.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105"
+                    style="background-image: url('assets/m4.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">O Sajni Re</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m4.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105"
+                    style="background-image: url('assets/m5.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Ami Je Tomar 3.0</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m5.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <!-- Repeat for other initial 4 albums... -->
+
+                <!-- Remaining Hidden Albums -->
+                <div class="hiddenAlbum music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105 hidden"
+                    style="background-image: url('assets/m6.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Ishq</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m6.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="hiddenAlbum music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105 hidden"
+                    style="background-image: url('assets/m7.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Tere Hawaale</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m7.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="hiddenAlbum music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105 hidden"
+                    style="background-image: url('assets/m8.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Raanjhan</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m8.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="hiddenAlbum music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105 hidden"
+                    style="background-image: url('assets/m9.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Durr Na Karin</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m9.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <div class="hiddenAlbum music-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:scale-105 hidden"
+                    style="background-image: url('assets/m10.jpg'); aspect-ratio: 4 / 3;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 space-y-3 text-white z-10">
+                        <h3 class="text-xl font-bold">Mere Mehboob Mere Sanam</h3>
+                    </div>
+                    <div class="audio-player-container absolute bottom-0 left-0 w-full p-4 bg-opacity-75">
+                        <audio controls class="w-full">
+                            <source src="assets/m10.mp3" type="audio/mp3">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+
+                <!-- Repeat for other hidden albums -->
+
+                <!-- Show More Button -->
+                <div id="showMoreButton" class="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center">
+                    <button id="showMoreStyledButton"
+                        class="styled-button px-6 py-3 text-white text-lg font-bold rounded-lg shadow-md hover:bg-gray-800 transition-all duration-300"
+                        onclick="toggleHiddenAlbums()">
+                        Show More
+                    </button>
+                </div>
+
+                <!-- Show Less Button -->
+                <div id="showLessButton" class="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center hidden">
+                    <button id="showLessStyledButton"
+                        class="styled-button px-6 py-3 text-white text-lg font-bold rounded-lg shadow-md hover:bg-gray-800 transition-all duration-300"
+                        onclick="toggleHiddenAlbums()">
+                        Show Less
+                    </button>
+                </div>
+
+
+            </div>
+        </section>
+
+        <style>
+            .grid-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 10px;
+                /* No gap between items */
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            /* General button styling */
+            .styled-button {
+                position: relative;
+                background-color: rgba(187, 12, 12, 0.6);
+                border: none;
+                border-radius: 8px;
+                padding: 12px 36px;
+                /* Increase horizontal padding */
+                cursor: pointer;
+                overflow: hidden;
+                text-align: center;
+                min-width: 200px;
+                /* Ensure buttons have enough width */
+                transition: background-color 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                /* Vertically align text and symbols */
+                justify-content: center;
+                /* Center content horizontally */
+            }
+
+            /* Hover background color change */
+            .styled-button:hover {
+                background-color: rgba(187, 12, 12, 0.8);
+            }
+
+            /* Add symbol (>> or <<) using pseudo-elements */
+            .styled-button::after {
+                content: ">>";
+                /* Default for "Show More" button */
+                position: absolute;
+                font-size: 1.2rem;
+                right: -40px;
+                /* Start position (further outside the button) */
+                top: 50%;
+                transform: translateY(-50%);
+                color: rgba(255, 255, 255, 0.8);
+                /* Same as text color */
+                transition: transform 0.3s ease, right 0.3s ease;
+            }
+
+            /* Animation for sliding symbol on hover */
+            #showMoreStyledButton:hover::after {
+                right: 16px;
+                /* Slide the symbol inside the button */
+                transform: translateY(-50%) translateX(10px);
+                /* Add slight horizontal motion */
+            }
+
+            /* "Show Less" button specific styling */
+            #showLessStyledButton::after {
+                content: "<<";
+                /* Symbol for "Show Less" button */
+            }
+
+            #showLessStyledButton:hover::after {
+                right: 16px;
+                /* Slide the symbol inside the button */
+                transform: translateY(-50%) translateX(-10px);
+                /* Add slight horizontal motion */
+            }
+        </style>
+
+        <!-- JavaScript to Toggle Albums -->
+        <script>
+            function toggleHiddenAlbums() {
+                const hiddenAlbums = document.querySelectorAll('.hiddenAlbum');
+                const showMoreButton = document.getElementById("showMoreButton");
+                const showLessButton = document.getElementById("showLessButton");
+
+                // Toggle visibility for hidden albums
+                hiddenAlbums.forEach(album => {
+                    album.classList.toggle("hidden");
+                });
+
+                // Toggle button visibility
+                showMoreButton.classList.toggle("hidden");
+                showLessButton.classList.toggle("hidden");
+            }
+        </script>
+
+
+        <script>
+            // Get all audio elements
+            const audios = document.querySelectorAll('audio');
+
+            // Add event listeners to each audio element
+            audios.forEach(audio => {
+                audio.addEventListener('play', function () {
+                    // Pause all other audio elements when one is played
+                    audios.forEach(otherAudio => {
+                        if (otherAudio !== audio) {
+                            otherAudio.pause();
+                            otherAudio.currentTime = 0; // Reset other audios to the beginning
+                        }
+                    });
+                });
+
+                audio.addEventListener('ended', function () {
+                    // Optionally reset playback when an audio finishes
+                    audio.currentTime = 0;
+                });
+            });
+        </script>
+
+
+
+
+
+        <!-- Add FontAwesome CDN for icons -->
+        <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+
+
+
+
+        <!-- Games Section -->
+        <section id="games" class="py-12 bg-black-100">
+            <h2 class="text-3xl font-bold text-center text-white mb-8">Games</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Example Game Card 1 -->
+                <div class="game-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:max-h-[500px]"
+                    style="background-image: url('assets/game1.jpg'); max-height: 300px;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 text-white z-10">
+                        <h3 class="text-2xl font-bold">Memory Match Game</h3>
+                        <p class="text-sm leading-relaxed">Explore your memory!</p>
+                        <a href="games/game1.html"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg mt-2 hover:bg-red-700 transition-colors duration-300 inline-block">Play
+                            Now!</a>
+                    </div>
+                </div>
+
+                <!-- Example Game Card 2 -->
+                <div class="game-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:max-h-[500px]"
+                    style="background-image: url('assets/game2.jpg'); max-height: 300px;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 text-white z-10">
+                        <h3 class="text-2xl font-bold">Space Adventure</h3>
+                        <p class="text-sm leading-relaxed">Don't miss the target!</p>
+                        <a href="games/game2.html"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg mt-2 hover:bg-red-700 transition-colors duration-300 inline-block">Play
+                            Now!</a>
+                    </div>
+                </div>
+
+                <!-- Example Game Card 3 -->
+                <div class="game-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:max-h-[500px]"
+                    style="background-image: url('assets/game3.jpg'); max-height: 300px;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 text-white z-10">
+                        <h3 class="text-2xl font-bold">Adventure Island</h3>
+                        <p class="text-sm leading-relaxed">Collect the treasure!</p>
+                        <a href="games/game3.html"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg mt-2 hover:bg-red-700 transition-colors duration-300 inline-block">Play
+                            Now!</a>
+                    </div>
+                </div>
+
+                <!-- Example Game Card 4 -->
+                <div class="game-card relative bg-cover bg-center bg-no-repeat rounded-lg overflow-hidden shadow-lg transition-all duration-500 hover:max-h-[500px]"
+                    style="background-image: url('assets/game4.jpg'); max-height: 300px;">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+                    <div class="relative p-5 text-white z-10">
+                        <h3 class="text-2xl font-bold">Catch the Ball</h3>
+                        <p class="text-sm leading-relaxed">Let's catch it!</p>
+                        <a href="games/game4.html"
+                            class="bg-red-600 text-white px-4 py-2 rounded-lg mt-2 hover:bg-red-700 transition-colors duration-300 inline-block">Play
+                            Now!</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </main>
+
+    <!-- Footer Placeholder -->
+    <footer id="footer"></footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>

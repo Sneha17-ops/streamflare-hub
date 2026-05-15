@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Adventure - Play</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: rgba(52, 52, 53, 0.215);
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        .winning-message, .game-over-message {
+            color: white;
+            text-align: center;
+            font-size: 30px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        .score-card {
+            position: absolute;
+            top: 20px;
+            font-size: 20px;
+            color: white;
+        }
+        #activeScore {
+            left: 20px;
+        }
+        #maxScore {
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas"></canvas>
+<div id="winMessage" class="winning-message">You Win! Target Hit!</div>
+<div id="gameOverMessage" class="game-over-message">Game Over! Bullet Missed the Target!</div>
+<div id="activeScore" class="score-card">Active Score: 0</div>
+<div id="maxScore" class="score-card">Max Score: 0</div>
+
+<script>
+// Set up the canvas
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+// Resize the canvas to fit the window
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Initialize score variables
+let activeScore = 0;
+let maxScore = 0;
+
+// Spaceship object
+const spaceship = {
+    x: canvas.width / 2,
+    y: canvas.height - 60,
+    width: 40,
+    height: 40,
+    speed: 5,
+    dx: 0,
+    dy: 0,
+    color: "lightblue"
+};
+
+// Bullet object
+const bullets = [];
+const bulletSpeed = 7;
+const bulletWidth = 5;
+const bulletHeight = 10;
+
+// Target object
+const target = {
+    x: Math.random() * (canvas.width - 50),
+    y: Math.random() * (canvas.height - 200),
+    width: 50,
+    height: 50,
+    speed: 2,
+    dx: 2, // Horizontal speed
+    dy: 2, // Vertical speed
+    color: "red"
+};
+
+// Handle movement
+function moveSpaceship() {
+    spaceship.x += spaceship.dx;
+    spaceship.y += spaceship.dy;
+    // Prevent spaceship from going out of bounds
+    if (spaceship.x < 0) spaceship.x = 0;
+    if (spaceship.x + spaceship.width > canvas.width) spaceship.x = canvas.width - spaceship.width;
+    if (spaceship.y < 0) spaceship.y = 0;
+    if (spaceship.y + spaceship.height > canvas.height) spaceship.y = canvas.height - spaceship.height;
+}
+
+// Draw spaceship
+function drawSpaceship() {
+    ctx.fillStyle = spaceship.color;
+    ctx.fillRect(spaceship.x, spaceship.y, spaceship.width, spaceship.height);
+}
+
+// Shoot bullets
+function shootBullet() {
+    const bullet = {
+        x: spaceship.x + spaceship.width / 2 - bulletWidth / 2,
+        y: spaceship.y,
+        width: bulletWidth,
+        height: bulletHeight,
+        color: "yellow",
+        speed: bulletSpeed
+    };
+    bullets.push(bullet);
+}
+
+// Draw bullets
+function drawBullets() {
+    for (let i = 0; i < bullets.length; i++) {
+        let bullet = bullets[i];
+        bullet.y -= bullet.speed;
+        ctx.fillStyle = bullet.color;
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+        
+        // Check if bullet goes out of bounds (misses the target by hitting the top of the screen)
+        if (bullet.y < 0) {
+            endGame();  // Game over if bullet misses the target
+            return;
+        }
+    }
+}
+
+// Draw target
+function drawTarget() {
+    ctx.fillStyle = target.color;
+    ctx.fillRect(target.x, target.y, target.width, target.height);
+}
+
+// Move target
+function moveTarget() {
+    target.x += target.dx;
+    target.y += target.dy;
+
+    // Make target bounce off the walls
+    if (target.x < 0 || target.x + target.width > canvas.width) target.dx *= -1;
+    if (target.y < 0 || target.y + target.height > canvas.height) target.dy *= -1;
+}
+
+// Check if a bullet hits the target
+function checkCollision() {
+    for (let i = 0; i < bullets.length; i++) {
+        let bullet = bullets[i];
+        if (bullet.x < target.x + target.width &&
+            bullet.x + bullet.width > target.x &&
+            bullet.y < target.y + target.height &&
+            bullet.y + bullet.height > target.y) {
+            // Collision detected
+            bullets.splice(i, 1);  // Remove the bullet
+            activeScore += 10;  // Increase active score by 10
+            if (activeScore > maxScore) {
+                maxScore = activeScore; // Update max score if active score exceeds it
+            }
+            updateScores();  // Update the score display
+            showWinningMessage();  // Show winning message
+            resetTarget();  // Reset target position after collision
+            break;
+        }
+    }
+}
+
+// Show winning message
+function showWinningMessage() {
+    document.getElementById("winMessage").style.display = "block";
+    setTimeout(() => {
+        document.getElementById("winMessage").style.display = "none"; // Hide after 3 seconds
+    }, 3000);
+}
+
+// Show game over message
+function showGameOverMessage() {
+    document.getElementById("gameOverMessage").style.display = "block";
+    setTimeout(() => {
+        document.getElementById("gameOverMessage").style.display = "none"; // Hide after 3 seconds
+    }, 3000);
+}
+
+// Reset target to a new random position
+function resetTarget() {
+    target.x = Math.random() * (canvas.width - target.width);
+    target.y = Math.random() * (canvas.height - 200);
+}
+
+// Update score displays
+function updateScores() {
+    document.getElementById("activeScore").textContent = "Active Score: " + activeScore;
+    document.getElementById("maxScore").textContent = "Max Score: " + maxScore;
+}
+
+// End game by resetting the active score and showing game over message
+function endGame() {
+    activeScore = 0;  // Reset active score
+    updateScores();  // Update score display
+    showGameOverMessage();  // Show game over message
+    resetGame();  // Reset game elements like target
+}
+
+// Reset the game state
+function resetGame() {
+    bullets.length = 0;  // Clear all bullets
+    activeScore = 0;  // Reset active score
+    updateScores();  // Update score display
+    target.x = Math.random() * (canvas.width - target.width);  // Random position
+    target.y = Math.random() * (canvas.height - 200);  // Random position
+}
+
+// Keyboard input handling
+function keyDownHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        spaceship.dx = spaceship.speed;
+    } else if (e.key == "Left" || e.key == "ArrowLeft") {
+        spaceship.dx = -spaceship.speed;
+    } else if (e.key == "Up" || e.key == "ArrowUp") {
+        spaceship.dy = -spaceship.speed;
+    } else if (e.key == "Down" || e.key == "ArrowDown") {
+        spaceship.dy = spaceship.speed;
+    } else if (e.key == " ") { // Spacebar to shoot
+        shootBullet();
+    }
+}
+
+function keyUpHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight" || e.key == "Left" || e.key == "ArrowLeft") {
+        spaceship.dx = 0;
+    } else if (e.key == "Up" || e.key == "ArrowUp" || e.key == "Down" || e.key == "ArrowDown") {
+        spaceship.dy = 0;
+    }
+}
+
+// Event listeners for keyboard input
+window.addEventListener("keydown", keyDownHandler, false);
+window.addEventListener("keyup", keyUpHandler, false);
+
+// Game loop to render the game
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSpaceship();
+    moveSpaceship();
+    drawBullets();
+    moveTarget();
+    drawTarget();
+    checkCollision();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop(); // Start the game loop
+
+</script>
+</body>
+</html>

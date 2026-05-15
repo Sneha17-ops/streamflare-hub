@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Ball Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            width: 100%;
+            background-color: rgba(187, 12, 12, 0.6);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            color: white;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #ffcccc;
+        }
+
+        footer {
+            background-color: black;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        canvas {
+            border: 1px solid #000;
+            background-color: #87CEEB;
+            margin-top: 100px;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 32px;
+            color: red;
+            font-weight: bold;
+        }
+
+        .scoreboard, .controls {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .controls button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #startGame 
+        {
+            background-color: #063b07;
+        }
+
+        #resetGame
+        {
+            background-color: rgba(187, 12, 12, 0.6);
+        }
+
+        .controls button:hover {
+            background-color: #ff4d4d;
+        }
+
+        /* Hover effects for buttons */
+        #startGame:hover {
+            background-color: #0a5f0b;
+        }
+
+        #resetGame:hover {
+            background-color: #b30909;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Catch the Ball</h1>
+    <nav>
+        <a href="../index.html">Home</a>
+        <a href="./game4.html">Game 4</a>
+        <a href="../index.html#games">Games</a>
+    </nav>
+</header>
+
+<canvas id="gameCanvas" width="500" height="500"></canvas>
+<div id="gameOver" class="game-over hidden">Game Over</div>
+<div id="scoreboard" class="scoreboard">
+    Score: <span id="score">0</span> | Max Score: <span id="maxScore">0</span>
+</div>
+<div class="controls">
+    <button id="startGame">Start</button>
+    <button id="resetGame">Reset</button>
+</div>
+
+<footer> &copy; 2024 Online Entertainment Hub. All Rights Reserved.</footer>
+
+<script>
+    // Get the canvas and context
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const gameOver = document.getElementById('gameOver');
+    const scoreElement = document.getElementById('score');
+    const maxScoreElement = document.getElementById('maxScore');
+    const startGameButton = document.getElementById('startGame');
+    const resetGameButton = document.getElementById('resetGame');
+
+    // Set up the game
+    const basketWidth = 80;
+    const basketHeight = 20;
+    let basketX = (canvas.width - basketWidth) / 2;
+    let basketSpeed = 5;
+
+    // Ball variables
+    const ballRadius = 15;
+    let ballX = Math.random() * (canvas.width - ballRadius * 2) + ballRadius;
+    let ballY = 0;
+    let ballSpeed = 2;
+
+    // Game state
+    let isGameOver = false;
+    let score = 0;
+    let maxScore = localStorage.getItem('maxScore') ? parseInt(localStorage.getItem('maxScore')) : 0;
+    let gameActive = false;
+
+    // Display the maximum score
+    maxScoreElement.textContent = maxScore;
+
+    // Handle key press for basket movement
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowLeft' && basketX > 0) {
+            basketX -= basketSpeed;
+        } else if (event.key === 'ArrowRight' && basketX < canvas.width - basketWidth) {
+            basketX += basketSpeed;
+        }
+    });
+
+    // Draw the basket
+    function drawBasket() {
+        ctx.fillStyle = 'maroon';
+        ctx.fillRect(basketX, canvas.height - basketHeight, basketWidth, basketHeight);
+    }
+
+    // Draw the falling ball
+    function drawBall() {
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = 'green';
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    // Update the game state
+    function updateGame() {
+        if (!gameActive || isGameOver) return;
+
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Update ball position
+        ballY += ballSpeed;
+
+        // Check for collision with basket
+        if (ballY + ballRadius > canvas.height - basketHeight &&
+            ballX > basketX && ballX < basketX + basketWidth) {
+            // Ball caught, increase score
+            score++;
+            scoreElement.textContent = score;
+
+            // Update max score immediately if the current score exceeds it
+            if (score > maxScore) {
+                maxScore = score;
+                localStorage.setItem('maxScore', maxScore);
+                maxScoreElement.textContent = maxScore;
+            }
+
+            // Reset the ball position
+            ballX = Math.random() * (canvas.width - ballRadius * 2) + ballRadius;
+            ballY = 0;
+        }
+
+        // Check if the ball falls off the screen
+        if (ballY > canvas.height) {
+            // Game Over logic
+            isGameOver = true;
+            gameOver.classList.remove('hidden');
+        }
+
+        // Draw the basket and ball
+        drawBasket();
+        drawBall();
+
+        // Continue the game loop
+        if (!isGameOver) {
+            requestAnimationFrame(updateGame);
+        }
+    }
+
+    // Start game event
+    startGameButton.addEventListener('click', () => {
+        if (!gameActive) {
+            gameActive = true;
+            isGameOver = false;
+            gameOver.classList.add('hidden');
+            score = 0;
+            scoreElement.textContent = score;
+            ballY = 0;
+            updateGame();
+        }
+    });
+
+    // Reset game event
+    resetGameButton.addEventListener('click', () => {
+        gameActive = false;
+        isGameOver = false;
+        gameOver.classList.add('hidden');
+        score = 0;
+        scoreElement.textContent = score;
+        ballX = Math.random() * (canvas.width - ballRadius * 2) + ballRadius;
+        ballY = 0;
+        basketX = (canvas.width - basketWidth) / 2;
+    });
+</script>
+
+</body>
+</html>

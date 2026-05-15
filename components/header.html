@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScreenScape</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+    <!-- Custom CSS for navbar, search effect, and notification panel -->
+    <style>
+        /* Navbar styling */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+            box-shadow: none;
+            z-index: 1000;
+        }
+
+        .navbar-scrolled {
+            background-color: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Increase size of navbar links */
+        .navbar-nav .nav-link {
+            font-size: 20px;
+            padding: 10px 25px;
+            /* Adjust padding to add more spacing */
+        }
+
+        /* Increase size of icons */
+        .navbar-nav .nav-link i {
+            font-size: 24px;
+        }
+
+        /* Styling for the search button and bar */
+        .nav-item.search {
+            position: relative;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            border: 2px solid white;
+            padding: 5px;
+            width: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: width 0.3s ease, opacity 0.3s ease, visibility 0s 0.3s;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 16px;
+            padding: 0 10px;
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .nav-item.search:hover .search-bar {
+            width: 250px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-item.search:hover .search-bar input {
+            width: 200px;
+        }
+
+        /* Notification Panel */
+        .nav-item.notification {
+            position: relative;
+        }
+
+        .notification-panel {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #000;
+            /* Dark black background */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            width: 200px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .nav-item.notification:hover .notification-panel {
+            display: block;
+        }
+
+        /* Profile Dropdown */
+        .nav-item.profile {
+            position: relative;
+        }
+
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1));
+            /* Gradient dark black with transparency */
+            color: white;
+            width: 250px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+
+        .nav-item.profile:hover .profile-dropdown,
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+        }
+
+        .profile-dropdown a:hover {
+            background-color: #444;
+        }
+
+        .profile-dropdown-footer {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .profile-dropdown-footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .profile-dropdown-footer a:hover {
+            background-color: #444;
+            color: #fff;
+        }
+
+        /* Arrow styling */
+        .nav-item.profile i {
+            font-size: 20px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <a class="navbar-brand d-flex align-items-center" href="#">
+            <img src="assets/icon.png" alt="ScreenScape Logo">
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link" href="#movies">Movies</a></li>
+                <li class="nav-item"><a class="nav-link" href="#music">Music</a></li>
+                <li class="nav-item"><a class="nav-link" href="#games">Games</a></li>
+                <li class="nav-item search">
+                    <a class="nav-link" href="#"><i class="fas fa-search"></i></a>
+                    <div class="search-bar"><input type="text" placeholder="Search..."></div>
+                </li>
+                <li class="nav-item notification">
+                    <a class="nav-link" href="#"><i class="fas fa-bell"></i></a>
+                    <div class="notification-panel">
+                        <p>Welcome to StreamFlare - Where entertainment ignites!</p>
+                    </div>
+                </li>
+                <li class="nav-item profile">
+                    <a class="nav-link" href="#"><i class="fas fa-user"></i><i class="fas fa-caret-down"></i></a>
+                    <div class="profile-dropdown">
+                        <a href="#">Welcome, Sneha!</a>
+                        <a href="#">Manage Profiles</a>
+                        <a href="#">Transfer Profile</a>
+                        <a href="#">Exit Profile</a>
+                        <a href="#">Account</a>
+                        <a href="#">Help Center</a>
+                        <div class="profile-dropdown-footer">
+                            <a href="#">Sign out of StreamFlare</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- JavaScript to Toggle Navbar Background on Scroll -->
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+    </script>
+
+</body>
+
+</html>

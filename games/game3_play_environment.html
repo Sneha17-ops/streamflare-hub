@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adventure Island - Play</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.3/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b85c6;
+        }
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: #0b85c6;
+            overflow: hidden;
+        }
+        #player {
+            width: 50px;
+            height: 50px;
+            background-color: #ff4500;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .obstacle {
+            width: 100px;
+            height: 100px;
+            background-color: #18e918ef;
+            position: absolute;
+        }
+        .treasure {
+            width: 40px;
+            height: 40px;
+            background-color: #ffd700;
+            position: absolute;
+        }
+        .score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+        .level {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <div id="player"></div>
+        <div class="score" id="score">Score: 0</div>
+        <div class="level" id="level">Level: 1</div>
+
+        <!-- Sample Obstacles -->
+        <div class="obstacle" style="top: 100px; left: 200px;"></div>
+        <div class="obstacle" style="top: 300px; left: 600px;"></div>
+
+        <!-- Multiple Treasures -->
+        <div class="treasure" style="top: 200px; left: 300px;"></div>
+        <div class="treasure" style="top: 400px; left: 500px;"></div>
+        <div class="treasure" style="top: 600px; left: 700px;"></div>
+        <div class="treasure" style="top: 150px; left: 800px;"></div>
+        <div class="treasure" style="top: 500px; left: 100px;"></div>
+    </div>
+
+    <script>
+        // Game variables
+        const player = document.getElementById('player');
+        const gameContainer = document.getElementById('game-container');
+        const scoreDisplay = document.getElementById('score');
+        const levelDisplay = document.getElementById('level');
+        const obstacles = document.querySelectorAll('.obstacle');
+        const treasures = document.querySelectorAll('.treasure');
+        
+        let playerPosX = gameContainer.offsetWidth / 2;
+        let playerPosY = gameContainer.offsetHeight / 2;
+        let score = 0;
+        let maxScore = localStorage.getItem('maxScore') ? parseInt(localStorage.getItem('maxScore')) : 0;
+        let level = 1;
+        let treasuresCollected = 0;
+        const treasuresToCollect = 5; // Number of treasures needed to win a level
+
+        // Display max score
+        const maxScoreDisplay = document.createElement('div');
+        maxScoreDisplay.classList.add('score');
+        maxScoreDisplay.style.top = '60px';
+        maxScoreDisplay.style.left = '20px';
+        maxScoreDisplay.textContent = `Max Score: ${maxScore}`;
+        document.body.appendChild(maxScoreDisplay);
+
+        // Initial player position
+        player.style.left = `${playerPosX}px`;
+        player.style.top = `${playerPosY}px`;
+
+        // Handle player movement
+        function movePlayer(event) {
+            switch(event.key) {
+                case 'w':
+                    if (playerPosY > 0) playerPosY -= 10;
+                    break;
+                case 'a':
+                    if (playerPosX > 0) playerPosX -= 10;
+                    break;
+                case 's':
+                    if (playerPosY < gameContainer.offsetHeight - player.offsetHeight) playerPosY += 10;
+                    break;
+                case 'd':
+                    if (playerPosX < gameContainer.offsetWidth - player.offsetWidth) playerPosX += 10;
+                    break;
+            }
+            player.style.left = `${playerPosX}px`;
+            player.style.top = `${playerPosY}px`;
+
+            // Check for collision with obstacles
+            checkObstacleCollision();
+            // Check for collision with treasures
+            checkTreasureCollision();
+        }
+
+        // Check for collision with obstacles
+        function checkObstacleCollision() {
+            const playerRect = player.getBoundingClientRect();
+            obstacles.forEach(obstacle => {
+                const obstacleRect = obstacle.getBoundingClientRect();
+                if (playerRect.left < obstacleRect.right &&
+                    playerRect.right > obstacleRect.left &&
+                    playerRect.top < obstacleRect.bottom &&
+                    playerRect.bottom > obstacleRect.top) {
+                        alert('You hit an obstacle! Game Over!');
+                        updateMaxScore();
+                        resetGame();
+                }
+            });
+        }
+
+        // Check for collision with treasures
+        function checkTreasureCollision() {
+            const playerRect = player.getBoundingClientRect();
+            treasures.forEach(treasure => {
+                const treasureRect = treasure.getBoundingClientRect();
+                if (playerRect.left < treasureRect.right &&
+                    playerRect.right > treasureRect.left &&
+                    playerRect.top < treasureRect.bottom &&
+                    playerRect.bottom > treasureRect.top) {
+                    score += 10;
+                    treasuresCollected++;
+                    scoreDisplay.textContent = `Score: ${score}`;
+                    treasure.style.display = 'none'; // Hide the collected treasure
+                    if (treasuresCollected >= treasuresToCollect) {
+                        levelUp();
+                    }
+                }
+            });
+        }
+
+        // Level up function
+        // Level up function with winning message
+        function levelUp() {
+            level++;
+            levelDisplay.textContent = `Level: ${level}`;
+            treasuresCollected = 0; // Reset treasure count for the next level
+            resetTreasures(); // Reset and place treasures randomly for the new level
+
+            // Show a winning message when all treasures are collected
+            if (score >= treasuresToCollect * 10) {
+                setTimeout(() => {
+                    alert('Congratulations! You collected all the treasures and leveled up!');
+                }, 200); // Display a winning message after a short delay
+            }
+        }
+
+
+        // Reset the treasures for the new level
+        function resetTreasures() {
+            treasures.forEach(treasure => {
+                treasure.style.display = 'block'; // Show all treasures again
+                const randomX = Math.floor(Math.random() * (gameContainer.offsetWidth - 40));
+                const randomY = Math.floor(Math.random() * (gameContainer.offsetHeight - 40));
+                treasure.style.left = `${randomX}px`;
+                treasure.style.top = `${randomY}px`;
+            });
+        }
+
+        // Reset game after collision with obstacle
+        function resetGame() {
+            playerPosX = gameContainer.offsetWidth / 2;
+            playerPosY = gameContainer.offsetHeight / 2;
+            player.style.left = `${playerPosX}px`;
+            player.style.top = `${playerPosY}px`;
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+            level = 1;
+            levelDisplay.textContent = `Level: ${level}`;
+            treasuresCollected = 0;
+            resetTreasures();
+        }
+
+        // Update the maximum score if necessary
+        function updateMaxScore() {
+            if (score > maxScore) {
+                maxScore = score;
+                localStorage.setItem('maxScore', maxScore);
+                maxScoreDisplay.textContent = `Max Score: ${maxScore}`;
+            }
+        }
+
+        // Listen for player key press
+        document.addEventListener('keydown', movePlayer);
+    </script>
+
+</body>
+</html>
