@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'sneha17ops/streamflare-app'
+        IMAGE_NAME = 'sneha1728/streamflare-app'
     }
 
     stages {
