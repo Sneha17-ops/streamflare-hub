@@ -47,13 +47,19 @@ pipeline {
 
         stage('Stop Old Container') {
             steps {
-                bat 'docker stop streamflare-container || exit 0'
+                bat '''
+                docker stop streamflare-container
+                exit /b 0
+                '''
             }
         }
 
         stage('Remove Old Container') {
             steps {
-                bat 'docker rm streamflare-container || exit 0'
+                bat '''
+                docker rm streamflare-container
+                exit /b 0
+                '''
             }
         }
 
