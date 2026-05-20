@@ -3,6 +3,9 @@ pipeline {
 
     environment {
         IMAGE_NAME = 'sneha1728/streamflare-app'
+
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = credentials('clerk-publishable-key')
+        CLERK_SECRET_KEY = credentials('clerk-secret-key')
     }
 
     stages {
@@ -16,7 +19,12 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t streamflare-app .'
+                bat '''
+                docker build ^
+                --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=%NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY% ^
+                --build-arg CLERK_SECRET_KEY=%CLERK_SECRET_KEY% ^
+                -t streamflare-app .
+                '''
             }
         }
 
@@ -65,7 +73,12 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                bat 'docker run -d -p 3000:3000 --name streamflare-container %IMAGE_NAME%'
+                bat '''
+                docker run -d -p 3000:3000 ^
+                -e NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=%NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY% ^
+                -e CLERK_SECRET_KEY=%CLERK_SECRET_KEY% ^
+                --name streamflare-container %IMAGE_NAME%
+                '''
             }
         }
     }
