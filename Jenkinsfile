@@ -65,7 +65,7 @@ pipeline {
 
         stage('Run New Container') {
             steps {
-                bat 'docker run -d -p 3000:80 --name streamflare-container %IMAGE_NAME%'
+                bat 'docker run -d -p 3000:3000 --name streamflare-container %IMAGE_NAME%'
             }
         }
     }

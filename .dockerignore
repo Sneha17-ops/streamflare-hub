@@ -1,6 +1,9 @@
 node_modules
+.next
+.env*
 Dockerfile
 .dockerignore
 README.md
 .git
 .gitignore
+.vercel

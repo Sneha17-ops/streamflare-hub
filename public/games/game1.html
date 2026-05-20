@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Page background */
+        body {
+            background-color: black;
+        }
+
+        /* Memory card styles */
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #3182CE;
+            /* Blue for memory cards */
+            color: white;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-flipped {
+            background-color: #3182ce1d;
+        }
+
+        /* Hidden cards */
+        .hidden {
+            visibility: hidden;
+        }
+
+        /* Grid styles */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        /* Game container styles */
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Header and footer styling */
+        header,
+        footer,
+        #reset-btn,
+        #start-btn {
+            background-color: rgb(187, 12, 12, 0.6);
+            /* Red color for header, footer, and reset button */
+            color: white;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: rgba(187, 12, 12, 0.6);
+            /* Semi-transparent red */
+            color: white;
+            padding: 10px;
+        }
+
+        /* Footer styling */
+        footer {
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            text-align: center;
+            background-color: black;
+            /* Set the background color to black */
+        }
+
+        /* Reset and Start button styling */
+        #reset-btn,
+        #start-btn {
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #reset-btn {
+            background-color: rgb(187, 12, 12, 0.6);
+        }
+
+        #start-btn {
+            background-color: #063b07;
+            /* Mild green */
+        }
+
+        /* Hover effects for buttons */
+        #start-btn:hover {
+            background-color: #0a5f0b;
+        }
+
+        #reset-btn:hover {
+            background-color: #b30909;
+        }
+
+        /* Score styling */
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .score-text {
+            color: white;
+            font-size: 18px;
+        }
+
+        /* Align scores */
+        .score-left {
+            text-align: left;
+        }
+
+        .score-right {
+            text-align: right;
+        }
+
+        /* Lives container */
+        .lives-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .heart {
+            font-size: 24px;
+            margin: 0 5px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .heart-lost {
+            transform: translateY(20px);
+            opacity: 0;
+            color: transparent;
+        }
+
+        .heart-blank {
+            color: gray;
+            /* Style for empty heart */
+            opacity: 1;
+            /* Ensures visibility after transition */
+            transform: none;
+        }
+
+        @keyframes popOut {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .animate-pop {
+            animation: popOut 0.4s ease-out;
+        }
+
+        /* Disabled card styling */
+        .card.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body class="bg-black">
+
+    <header>
+        <h1 class="top-10 left-20 text-2xl font-bold">Memory Match Game
+            <a href="../index.html" class="absolute right-40 text-xl text-white hover:text-gray-300 px-2">Home</a>
+            <a href="../index.html#games" class="absolute right-10 text-xl hover:text-gray-300 px-2">Games</a>
+        </h1>
+
+    </header>
+
+    <div class="game-container">
+        <h2 class="text-xl font-semibold mt-4 text-white">Match the pairs!</h2>
+
+        <!-- Grid for Memory Cards -->
+        <div class="grid mt-6" id="game-board">
+            <!-- Cards will be generated here -->
+        </div>
+
+        <!-- Lives display (hearts) -->
+        <div class="lives-container">
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+            <span class="heart">❤️</span>
+        </div>
+
+        <!-- Score Display below memory cards -->
+        <div class="score-container">
+            <p class="score-text score-left">Active Score: <span id="active-score">0</span></p>
+            <p class="score-text score-right">Maximum Score: <span id="max-score">0</span></p>
+        </div>
+
+        <!-- Buttons Container -->
+        <div class="flex justify-between mt-4">
+            <button id="start-btn" class="text-white py-2 px-4 rounded">Start Game</button>
+            <button id="reset-btn" class="bg-red-600 text-white py-2 px-4 rounded">Reset Game</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Memory Match Game</p>
+    </footer>
+
+    <script src="game.js"></script>
+    <script>
+        // Get references to elements
+        const startButton = document.getElementById('start-btn');
+        const cards = document.querySelectorAll('.card');
+
+        // Initially disable cards
+        cards.forEach(card => {
+            card.classList.add('disabled');
+        });
+
+        // Start Game functionality
+        startButton.addEventListener('click', function () {
+            // Enable the cards when the game starts
+            cards.forEach(card => {
+                card.classList.remove('disabled');
+            });
+
+            // Optionally, flip cards for 5 seconds and then hide them
+            setTimeout(() => {
+                // Flip cards back after 5 seconds
+                cards.forEach(card => {
+                    card.classList.remove('card-flipped');
+                });
+            }, 5000); // 5 seconds
+        });
+    </script>
+</body>
+
+</html>

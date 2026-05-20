@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+ 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - REDIS_ENABLED=true
+      - MONGODB_URI=mongodb://127.0.0.1:27017/streamflare
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_b24tbWFzdG9kb24tNzQuY2xlcmsuYWNjb3VudHMuZGV2JA
+      - CLERK_SECRET_KEY=sk_test_k4I4UNogc2PoJgWRmDKByh8bXvuSMBvalx5WKzFbOc
+    depends_on:
+      - redis
+    restart: always
+
+  # 2. REAL-TIME SOCKET.IO WEBSOCKET BROKER
+  websocket:
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "3001:3001"
+    command: node websocket-server.js
+    restart: always
+
+  # 3. HIGH-PERFORMANCE REDIS CACHE ENGINE
+  redis:
+    image: redis:alpine
+    restart: always
