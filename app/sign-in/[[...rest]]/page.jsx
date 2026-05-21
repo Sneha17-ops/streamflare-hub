@@ -37,7 +37,6 @@ export default function SignInCatchAllPage() {
       {/* ── LEFT BRANDING PANEL ─────────────────────────────────────── */}
       <div
         style={{
-          display: "none",
           width: "50%",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -45,7 +44,7 @@ export default function SignInCatchAllPage() {
           padding: "56px",
           overflow: "hidden",
         }}
-        className="lg:flex"
+        className="hidden lg:flex"
       >
         {/* Gradient background */}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(88,28,135,0.35) 0%, rgba(15,23,42,1) 50%, rgba(8,47,73,0.25) 100%)" }} />
@@ -210,78 +209,71 @@ export default function SignInCatchAllPage() {
           transition={{ duration: 0.5 }}
           style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "440px" }}
         >
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <p style={{ fontSize: "11px", fontFamily: "monospace", color: "#475569", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "8px" }}>Welcome back</p>
-            <h2 style={{ fontSize: "24px", fontWeight: 900, color: "#fff", margin: 0 }}>Sign in to your hub</h2>
+          <div style={{ textAlign: "center", marginBottom: "18px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+              <div style={{ padding: "6px 10px", borderRadius: 999, background: "linear-gradient(90deg,#7c3aed,#06b6d4)", color: "#071022", fontWeight: 800, fontSize: 12, letterSpacing: "0.08em" }}>PREMIUM</div>
+            </div>
+            <p style={{ fontSize: "11px", fontFamily: "monospace", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.18em", margin: "10px 0 6px" }}>Welcome back</p>
+            <h2 style={{ fontSize: "28px", fontWeight: 900, color: "#fff", margin: 0 }}>Sign in to your hub</h2>
+            <p style={{ marginTop: 8, color: "#b6c2d8", fontSize: 13 }}>Access exclusive movies, music and games — beautifully curated.</p>
           </div>
 
-          {/* Clerk SignIn component */}
-          <div style={{ borderRadius: "20px", overflow: "hidden", border: "1px solid #1e293b", boxShadow: "0 25px 60px rgba(0,0,0,0.7)" }}>
+          {/* Clerk SignIn component (premium card) */}
+          <div className="clerk-override" style={{ borderRadius: "22px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.04)", boxShadow: "0 40px 80px rgba(2,6,23,0.7)", background: "linear-gradient(180deg, rgba(8,20,34,0.6), rgba(6,10,20,0.55))", padding: 18 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg,#7c3aed,#06b6d4)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 30px rgba(99,102,241,0.14)" }}>
+                <span style={{ fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>SF</span>
+              </div>
+              <div>
+                <div style={{ color: "#dbeafe", fontWeight: 800 }}>StreamFlare Hub</div>
+                <div style={{ color: "#94a3b8", fontSize: 12 }}>Secure sign-in</div>
+              </div>
+            </div>
+
             <SignIn
               fallbackRedirectUrl="/dashboard"
               afterSignInUrl="/dashboard"
               appearance={{
-                variables: {
-                  colorPrimary: "#8b5cf6",
-                  colorBackground: "#0f172a",
-                  colorText: "#f8fafc",
-                  colorTextSecondary: "#94a3b8",
-                  colorInputBackground: "#1e293b",
-                  colorInputText: "#f8fafc",
-                  colorNeutral: "#475569",
-                  borderRadius: "12px",
-                  fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
-                  fontSize: "14px",
-                },
-                elements: {
-                  rootBox: "w-full",
-                  card: {
-                    background: "#0f172a",
-                    border: "none",
-                    boxShadow: "none",
-                    borderRadius: "0",
+                  variables: {
+                    colorPrimary: "#7c3aed",
+                    colorBackground: "#071022",
+                    colorText: "#e6eef9",
+                    colorTextSecondary: "#94a3b8",
+                    colorInputBackground: "#071225",
+                    colorInputText: "#e6eef9",
+                    colorNeutral: "#6b7280",
+                    borderRadius: "12px",
+                    fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
+                    fontSize: "15px",
                   },
-                  headerTitle: { color: "#f8fafc", fontWeight: "700" },
-                  headerSubtitle: { color: "#94a3b8" },
-                  socialButtonsBlockButton: {
-                    background: "#1e293b",
-                    border: "1px solid #334155",
-                    color: "#f8fafc",
+                  elements: {
+                    rootBox: "w-full",
+                    card: "bg-transparent border-0 shadow-none",
+                    headerTitle: "text-white font-extrabold",
+                    headerSubtitle: "text-slate-400",
+                    socialButtonsBlockButton: "bg-gradient-to-r from-slate-900 to-slate-800 border border-white/5 text-white shadow-lg",
+                    socialButtonsBlockButtonText: "text-white",
+                    dividerLine: "bg-white/5",
+                    dividerText: "text-slate-400",
+                    formFieldLabel: "text-slate-300",
+                    formFieldInput: "bg-[#071225] border border-white/5 text-white",
+                    formButtonPrimary: "bg-gradient-to-r from-purple-600 to-cyan-400 font-extrabold shadow-xl",
+                    footerActionLink: "text-purple-300",
+                    footerActionText: "text-slate-400",
+                    identityPreviewText: "text-white",
+                    identityPreviewEditButton: "text-purple-300",
+                    otpCodeFieldInput: "bg-[#071225] border border-white/5 text-white",
+                    alertText: "text-white",
+                    formResendCodeLink: "text-purple-300",
                   },
-                  socialButtonsBlockButtonText: { color: "#f8fafc" },
-                  dividerLine: { background: "#1e293b" },
-                  dividerText: { color: "#475569" },
-                  formFieldLabel: { color: "#cbd5e1" },
-                  formFieldInput: {
-                    background: "#1e293b",
-                    border: "1px solid #334155",
-                    color: "#f8fafc",
-                  },
-                  formButtonPrimary: {
-                    background: "linear-gradient(135deg, #7c3aed, #06b6d4)",
-                    fontWeight: "700",
-                    letterSpacing: "0.05em",
-                  },
-                  footerActionLink: { color: "#a78bfa" },
-                  footerActionText: { color: "#64748b" },
-                  identityPreviewText: { color: "#f8fafc" },
-                  identityPreviewEditButton: { color: "#a78bfa" },
-                  otpCodeFieldInput: {
-                    background: "#1e293b",
-                    border: "1px solid #334155",
-                    color: "#f8fafc",
-                  },
-                  alertText: { color: "#f8fafc" },
-                  formResendCodeLink: { color: "#a78bfa" },
-                },
-              }}
+                }}
             />
-          </div>
+            </div>
 
           {/* Footer note */}
           <p style={{ textAlign: "center", fontSize: "11px", color: "#334155", marginTop: "20px", fontFamily: "monospace" }}>
             New to StreamFlare?{" "}
-            <Link href="/sign-in" style={{ color: "#a78bfa", textDecoration: "none" }}>Create a free account</Link>
+            <Link href="/sign-up" style={{ color: "#a78bfa", textDecoration: "none" }}>Create a free account</Link>
           </p>
         </motion.div>
       </div>

@@ -19,9 +19,7 @@ export default function Navbar() {
     user = null;
   }
   const [scrolled, setScrolled] = useState(false);
-
-  // Hide navbar on auth pages
-  if (pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up")) return null;
+  const isAuthPage = pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up");
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -30,6 +28,9 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Hide navbar on auth pages
+  if (isAuthPage) return null;
 
   const navLinks = [
     { name: "Homepage", path: "/", icon: House },

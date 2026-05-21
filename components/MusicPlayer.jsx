@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMusicStore, useUserStore } from "../store";
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Radio } from "lucide-react";
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Radio, X } from "lucide-react";
 import { io } from "socket.io-client";
 import BlurImage from "./BlurImage";
 
@@ -32,6 +32,19 @@ export default function MusicPlayer() {
   const [prevVolume, setPrevVolume] = useState(0.8);
   const [showRoomInput, setShowRoomInput] = useState(false);
   const [roomDraft, setRoomDraft] = useState("FLARE-LOUNGE");
+
+  const handleClosePlayer = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setSyncRoomId(null);
+    setShowRoomInput(false);
+    setCurrentTrack(null);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  };
 
   useEffect(() => {
     if (syncRoomId) {
@@ -116,6 +129,10 @@ export default function MusicPlayer() {
     }
   }, [volume, muted]);
 
+  if (!currentTrack) {
+    return null;
+  }
+
   const handlePlayPause = () => {
     const nextPlaying = !isPlaying;
     setIsPlaying(nextPlaying);
@@ -184,8 +201,17 @@ export default function MusicPlayer() {
 
   return (
     <div className="fixed bottom-0 left-0 w-full z-50 px-6 py-4 bg-slate-950/85 backdrop-blur-xl border-t border-slate-900 select-none">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        
+      <div className="max-w-7xl mx-auto flex flex-col gap-3">
+        <div className="flex justify-end">
+          <button
+            onClick={handleClosePlayer}
+            aria-label="Close music player"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-800 bg-slate-900/90 text-slate-400 transition-colors hover:border-cyan-400 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Track Artwork and Artist details */}
           <div className="flex items-center space-x-4 w-full md:w-1/4">
             <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 shadow-neon-cyan border border-slate-800">
@@ -311,6 +337,7 @@ export default function MusicPlayer() {
           </div>
         </div>
 
+        </div>
       </div>
 
       <style jsx>{`
