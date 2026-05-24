@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('next', ['dev'], { stdio: 'inherit', shell: true }); spawn('node', ['websocket-server.js'], { stdio: 'inherit', shell: true });\"",
+    "prestart": "next build",
+    "prepare": "husky install",
     "dev:3000": "next dev -p 3000",
     "build": "next build",
     "start": "next start",
@@ -11,8 +13,8 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.39.3",
-    "@react-three/drei": "^9.100.0",
-    "@react-three/fiber": "^8.16.0",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^9.0.0",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
     "express": "^5.2.1",
@@ -33,6 +35,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "husky": "^8.0.0",
     "@types/canvas-confetti": "^1.6.4",
     "@types/node": "^20.14.9",
     "@types/react": "^19.0.0",

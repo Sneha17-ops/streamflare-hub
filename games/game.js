@@ -9,6 +9,23 @@ let maxScore = 0;
 let lives = 6;
 let gameStarted = false; // To track if the game has started
 
+// Notification helper (creates element if missing)
+function showNotification(message, type = 'success', duration = 2500) {
+    let el = document.getElementById('game-notification');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'game-notification';
+        el.className = 'game-notification';
+        el.setAttribute('aria-live', 'polite');
+        document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.classList.remove('success', 'error');
+    el.classList.add(type);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => el.classList.remove('show'), duration);
+}
+
 // Function to update score display
 function updateScores() {
     document.getElementById('active-score').textContent = activeScore;
@@ -90,8 +107,9 @@ function checkMatch() {
 
         if (matchedCards === cardValues.length / 2) {
             setTimeout(() => {
-                alert('You won! Congratulations!');
-                resetGame(); // Reset the game after winning
+                showNotification('You won! Congratulations!', 'success', 2200);
+                // Reset shortly after showing the notification
+                setTimeout(() => resetGame(), 900);
             }, 500);
         } else {
             lockBoard = false;
@@ -128,8 +146,8 @@ function loseLife() {
 
     if (lives === 0) {
         setTimeout(() => {
-            alert('Game Over. Better Luck Next Time!');
-            resetGame(); // Reset the game after game over
+            showNotification('Game Over. Better Luck Next Time!', 'error', 2200);
+            setTimeout(() => resetGame(), 900);
         }, 500);
     }
 }

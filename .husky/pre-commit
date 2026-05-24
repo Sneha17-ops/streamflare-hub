@@ -1,0 +1,2 @@
+#!/bin/sh
+node ./scripts/check_no_env_commit.js

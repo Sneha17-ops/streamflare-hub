@@ -24,7 +24,7 @@ export async function GET() {
         cover: g.background_image || "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800",
         category: g.genres?.map((x) => x.name).join(" / ") || "Adventure",
         rating: g.rating || 4.2,
-        gameUrl: "#",
+        gameUrl: `https://rawg.io/games/${g.slug || g.name.toLowerCase().replace(/\s+/g, "-")}`,
         videoPreview: g.clip?.clip || "https://www.w3schools.com/html/mov_bbb.mp4",
         isLegacy: false
       }));

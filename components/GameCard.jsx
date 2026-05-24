@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Play } from "lucide-react";
 import BlurImage from "./BlurImage";
 
-export default function GameCard({ game, onPlay }) {
+export default function GameCard({ game, onPlay, showPreview = true }) {
   const cardRef = useRef(null);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
@@ -48,7 +48,7 @@ export default function GameCard({ game, onPlay }) {
         className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
       />
 
-      {isHovered && (
+      {showPreview && isHovered && (
         <div className="absolute inset-0 z-10 w-full h-full bg-black">
           <video
             src={game.videoPreview}
@@ -66,7 +66,7 @@ export default function GameCard({ game, onPlay }) {
       )}
 
       <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent">
-        <div className="flex items-center justify-between items-start">
+        <div className="flex items-start justify-between">
           <span className={`text-[8px] font-bold uppercase tracking-widest font-mono border px-2 py-0.5 rounded-full ${
             game.isLegacy 
               ? "bg-purple-950/60 border-purple-500 text-purple-300 shadow-neon-purple animate-pulse" 
@@ -83,7 +83,7 @@ export default function GameCard({ game, onPlay }) {
         <p className="text-[10px] text-slate-400 mt-0.5 truncate">{game.category}</p>
 
         <div className="mt-4 flex items-center justify-between border-t border-slate-900 pt-3 opacity-0 group-hover:opacity-100 smooth-transition">
-          <span className="text-[9px] font-mono text-slate-500">{game.isLegacy ? "Click to play in-app" : "External Launcher"}</span>
+          <span className="text-[9px] font-mono text-slate-500">{game.isLegacy ? "Click to play in-app" : "Open game detail"}</span>
           <button
             onClick={(e) => {
               e.preventDefault();

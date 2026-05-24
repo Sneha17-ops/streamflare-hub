@@ -7,16 +7,16 @@ import { Play, ArrowLeft, Heart, Plus, Check, Star, MessageSquare } from "lucide
 import { MOCK_MOVIES } from "@/lib/api";
 import { useUserStore } from "@/store";
 import BlurImage from "@/components/BlurImage";
+import { useUser } from "@clerk/nextjs";
 
 export default function MovieDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useUser();
 
   const [movie, setMovie] = useState(null);
-  const [reviews, setReviews] = useState([
-    { author: "Marcus Vance", text: "Visually spectacular. The spatial audio track blew me away!", rating: 9, date: "2026-05-18" },
-    { author: "Elena Rostova", text: "A breathtaking performance, absolutely a masterpiece. Must watch!", rating: 10, date: "2026-05-19" }
-  ]);
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const [newReviewText, setNewReviewText] = useState("");
   const [newReviewRating, setNewReviewRating] = useState(10);
 
@@ -27,6 +27,31 @@ export default function MovieDetailsPage() {
       const found = MOCK_MOVIES.find((m) => m.id === id);
       setMovie(found || MOCK_MOVIES[0]);
     }
+  }, [id]);
+
+  useEffect(() => {
+    let alive = true;
+    async function loadReviews() {
+      setLoadingReviews(true);
+      try {
+        const response = await fetch(`/api/movies/${id}/reviews`, { cache: "no-store" });
+        const data = await response.json();
+        if (!alive) return;
+        setReviews(Array.isArray(data) ? data : []);
+      } catch (error) {
+        if (alive) setReviews([]);
+      } finally {
+        if (alive) setLoadingReviews(false);
+      }
+    }
+
+    if (id) {
+      loadReviews();
+    }
+
+    return () => {
+      alive = false;
+    };
   }, [id]);
 
   if (!movie) return null;
@@ -50,19 +75,37 @@ export default function MovieDetailsPage() {
     }
   };
 
-  const handlePostReview = (e) => {
+  const handlePostReview = async (e) => {
     e.preventDefault();
     if (!newReviewText.trim()) return;
 
-    setReviews([
+    const payload = {
+      author: user?.fullName || user?.firstName || "You",
+      text: newReviewText,
+      rating: newReviewRating,
+    };
+
+    setReviews((current) => [
       {
-        author: "You (Verified User)",
-        text: newReviewText,
-        rating: newReviewRating,
-        date: new Date().toISOString().split("T")[0]
+        id: `temp-${Date.now()}`,
+        author: `${payload.author}${user ? " (Verified User)" : ""}`,
+        text: payload.text,
+        rating: payload.rating,
+        date: new Date().toISOString().split("T")[0],
       },
-      ...reviews
+      ...current,
     ]);
+
+    try {
+      await fetch(`/api/movies/${id}/reviews`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      // Best-effort persistence; optimistic review remains visible.
+    }
+
     setNewReviewText("");
   };
 
@@ -126,16 +169,20 @@ export default function MovieDetailsPage() {
           </form>
 
           <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-            {reviews.map((r, i) => (
-              <div key={i} className="glass-panel p-4 rounded-2xl border border-slate-900/60 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-300 font-mono">{r.author}</span>
-                  <div className="flex items-center space-x-1 text-[9px] font-mono text-cyan-400"><Star className="w-3 h-3 fill-cyan-400 text-cyan-400" /><span>{r.rating}/10</span></div>
+            {loadingReviews ? (
+              <div className="glass-panel p-4 rounded-2xl border border-slate-900/60 text-xs text-slate-500">Loading reviews...</div>
+            ) : (
+              reviews.map((r, i) => (
+                <div key={r.id || i} className="glass-panel p-4 rounded-2xl border border-slate-900/60 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-300 font-mono">{r.author}</span>
+                    <div className="flex items-center space-x-1 text-[9px] font-mono text-cyan-400"><Star className="w-3 h-3 fill-cyan-400 text-cyan-400" /><span>{r.rating}/10</span></div>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed font-sans">{r.text}</p>
+                  <div className="text-[9px] font-mono text-slate-600 text-right">{r.date}</div>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans">{r.text}</p>
-                <div className="text-[9px] font-mono text-slate-600 text-right">{r.date}</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

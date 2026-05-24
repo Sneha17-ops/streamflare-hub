@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { SignInButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Film, Music, Gamepad2, Sparkles, ChevronRight, Star, Zap, Shield, Globe } from "lucide-react";
+import { Film, Music, Gamepad2, Sparkles, ChevronRight, Star, Zap, Shield, Globe } from "lucide-react";
 
 // ── Animated floating orb ────────────────────────────────────────────────────
 function Orb({ style }) {
@@ -162,7 +162,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* Main title */}
-        <motion.div
+          <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
@@ -196,7 +196,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* Description */}
-        <motion.p
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
@@ -205,7 +205,7 @@ export default function LandingPage() {
           The ultimate entertainment hub — cinematic movie streaming, shared music rooms,
           retro arcade gaming, all wrapped in a stunning glassmorphic dashboard.
           Sign in to unlock everything.
-        </motion.p>
+        </motion.div>
 
         {/* CTA Buttons */}
         <motion.div
@@ -214,26 +214,16 @@ export default function LandingPage() {
           transition={{ delay: 0.6 }}
           className="flex flex-wrap items-center justify-center gap-4 mb-14"
         >
-          <Link
-            href="/sign-in"
-            className="group relative flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-sm text-white overflow-hidden"
-            style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              Get Started Free
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </span>
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </Link>
-
-          <Link
-            href="/sign-in"
-            className="flex items-center gap-2 px-8 py-4 rounded-2xl border border-slate-700 text-slate-300 font-semibold text-sm hover:border-slate-500 hover:text-white hover:bg-slate-900/50 transition-all duration-300"
-          >
-            <Play className="w-4 h-4" />
-            See a Preview
-          </Link>
+          <SignInButton>
+            <button className="group relative flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-sm text-white overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}>
+              <span className="relative z-10 flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                Sign In to Get Started
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </SignInButton>
         </motion.div>
 
         {/* Feature pills */}
@@ -270,10 +260,10 @@ export default function LandingPage() {
       <section className="relative py-16 border-y border-slate-800/50">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-950/10 via-transparent to-cyan-950/10" />
         <div className="relative max-w-4xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <StatCard value="15+" label="Movies" delay={0} />
-          <StatCard value="25+" label="Music Tracks" delay={0.1} />
-          <StatCard value="4+" label="Arcade Games" delay={0.2} />
-          <StatCard value="10+" label="Languages" delay={0.3} />
+          <StatCard value="20+" label="Movies" delay={0} />
+          <StatCard value="75+" label="Music Tracks" delay={0.1} />
+          <StatCard value="6+" label="Arcade Games" delay={0.2} />
+          <StatCard value="15+" label="Languages" delay={0.3} />
         </div>
       </section>
 
@@ -347,13 +337,13 @@ export default function LandingPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden border border-slate-800 p-14"
+          className="relative max-w-3xl mx-auto rounded-3xl overflow-hidden border border-purple-500/20 p-14"
         >
           {/* Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-purple-950/40 via-slate-950 to-cyan-950/30" />
           <div className="absolute inset-0"
             style={{
-              backgroundImage: "radial-gradient(circle at 30% 50%, rgba(139,92,246,0.1) 0%, transparent 60%), radial-gradient(circle at 70% 50%, rgba(6,182,212,0.08) 0%, transparent 60%)"
+              backgroundImage: "radial-gradient(circle at 30% 50%, rgba(139,92,246,0.15) 0%, transparent 60%), radial-gradient(circle at 70% 50%, rgba(6,182,212,0.12) 0%, transparent 60%)"
             }}
           />
           {/* Top border glow */}
@@ -366,15 +356,16 @@ export default function LandingPage() {
             <p className="text-slate-400 text-base mb-10 max-w-md mx-auto leading-relaxed">
               Join StreamFlare and unlock the full cinematic entertainment experience.
             </p>
-            <Link
-              href="/sign-in"
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-base text-white"
-              style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
-            >
-              <Sparkles className="w-5 h-5" />
-              Sign In to StreamFlare
-              <ChevronRight className="w-5 h-5" />
-            </Link>
+            <SignInButton>
+              <button
+                className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-base text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500"
+                style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
+              >
+                <Sparkles className="w-5 h-5" />
+                Sign In to StreamFlare
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </SignInButton>
           </div>
         </motion.div>
       </section>

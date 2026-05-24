@@ -5,12 +5,13 @@ import Image from "next/image";
 
 export default function BlurImage({ src, alt, className, ...props }) {
   const [isLoading, setLoading] = useState(true);
+  const [fallbackSrc, setFallbackSrc] = useState(null);
   const sizes = props.fill && !props.sizes ? "100vw" : props.sizes;
 
   return (
     <div className="relative overflow-hidden w-full h-full bg-slate-900/60 rounded-lg">
       <Image
-        src={src}
+        src={fallbackSrc || src}
         alt={alt}
         sizes={sizes}
         className={`
@@ -22,6 +23,11 @@ export default function BlurImage({ src, alt, className, ...props }) {
           ${className}
         `}
         onLoad={() => setLoading(false)}
+        onError={() => {
+          // when remote image fails (404 or network), swap to a local fallback
+          setFallbackSrc('/assets/hero-bg.jpg');
+          setLoading(false);
+        }}
         {...props}
       />
       {isLoading && (

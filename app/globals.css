@@ -8,6 +8,9 @@
     background-color: #020617;
   }
 
+  /* Always show vertical scrollbar to avoid layout shift (prevents navbar jump) */
+  html { overflow-y: scroll; }
+
   /* Custom Neon Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
@@ -65,4 +68,175 @@
 /* Custom interactive animation transitions */
 .smooth-transition {
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Clerk UI suppression: development keyless banner, badges, portals
+   These selectors target every known variation of the dev warning UI
+───────────────────────────────────────────────────────────────────────── */
+
+/* Target the floating keyless-mode / development portal banners */
+[data-clerk-portal],
+.cl-portal__roots,
+.cl-rootBox + div:not([class]),
+.__clerk_container,
+[id^="clerk-modal"],
+[class*="clerk-development"],
+[class*="clerk-keyless"],
+[class*="clerk-setup"],
+[class*="ClerkKeyless"],
+[class*="ClerkDevBadge"],
+[class*="ClerkDeveloperBadge"],
+[class*="development-mode"],
+.clerk-development-mode,
+.clerk-footer,
+.clerk-footer__development-mode,
+.clerk-dev-badge,
+.clerk-raw--development-mode,
+.clerk-keyless-prompt,
+.clerk-embedded-setup,
+.clerk-application-notification,
+.clerk-dev-notification,
+.clerk-setup-widget {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Ensure Clerk embedded card fits our frosted panel */
+.clerk-override .clerk-root, .clerk-override .clerk-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Tweak Clerk button sizing inside our card */
+.clerk-override .clerk-button, .clerk-override .clerk-social-button {
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+}
+
+/* Neon glow shadow utilities */
+.shadow-neon-purple {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.15);
+}
+
+.shadow-neon-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), 0 0 40px rgba(6, 182, 212, 0.15);
+}
+
+.shadow-neon-accent {
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), 0 0 40px rgba(236, 72, 153, 0.15);
+}
+
+/* Slow pulse animation */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Clerk UI Dark Glassmorphic Theme Overrides & Dev Badge Suppression
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Suppress Clerk's development mode badge and keyless prompt */
+.cl-internal-18y13y1,
+.cl-internal-1pyrmom,
+.cl-internal-dev-badge,
+.cl-internal-devBadge,
+.cl-dev-badge,
+[class*="cl-internal-dev-badge"],
+[class*="cl-internal-devBadge"],
+.cl-devBadge {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Force Clerk Popovers, Cards and elements to match StreamFlare UI */
+.cl-card,
+.cl-rootBox,
+.cl-signIn-start,
+.cl-signIn-factorOne,
+.cl-signUp-start,
+.cl-userButtonPopoverCard,
+.cl-userProfile-root {
+  background-color: transparent !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.cl-socialButtonsBlockButton {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+
+.cl-socialButtonsBlockButton:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(139, 92, 246, 0.4) !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.15) !important;
+}
+
+.cl-formFieldInput {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  transition: all 0.3s ease;
+}
+
+.cl-formFieldInput:focus {
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.25) !important;
+}
+
+.cl-formButtonPrimary {
+  background: linear-gradient(90deg, #8b5cf6, #06b6d4) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  transition: all 0.3s ease;
+}
+
+.cl-formButtonPrimary:hover {
+  opacity: 0.9 !important;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4) !important;
+}
+
+.cl-footerActionLink {
+  color: #a78bfa !important;
+}
+
+.cl-footerActionLink:hover {
+  color: #c084fc !important;
+}
+
+.cl-headerTitle, .cl-headerSubtitle {
+  color: #ffffff !important;
+}
+
+.cl-dividerText {
+  color: #475569 !important;
+}
+
+.cl-dividerLine {
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }

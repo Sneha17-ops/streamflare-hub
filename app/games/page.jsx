@@ -1,13 +1,18 @@
 "use client";
+export const dynamic = 'force-dynamic';
+
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Gamepad2, Search, SlidersHorizontal } from "lucide-react";
 import { fetchTrendingGames } from "@/lib/api";
 import GameCard from "@/components/GameCard";
 import ArcadeModal from "@/components/ArcadeModal";
+import AuthGate from "@/components/AuthGate";
 
 export default function GamesPage() {
+  const router = useRouter();
   const [games, setGames] = useState([]);
   const [filteredGames, setFilteredGames] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,7 +57,7 @@ export default function GamesPage() {
     if (game.isLegacy) {
       setActiveArcadeGame({ url: game.gameUrl, title: game.title });
     } else {
-      window.open(game.gameUrl, "_blank");
+      router.push(`/games/${game.id}`);
     }
   };
 
@@ -70,7 +75,8 @@ export default function GamesPage() {
   };
 
   return (
-    <div className="space-y-10">
+    <AuthGate>
+      <div className="space-y-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-900 pb-8">
         <div className="space-y-2">
           <h1 className="text-3xl font-black tracking-tight text-white font-mono uppercase flex items-center space-x-3">
@@ -114,7 +120,7 @@ export default function GamesPage() {
         <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {filteredGames.map((game) => (
             <motion.div key={game.id} variants={itemVariants}>
-              <GameCard game={game} onPlay={handleGameLaunch} />
+              <GameCard game={game} onPlay={handleGameLaunch} showPreview={false} />
             </motion.div>
           ))}
         </motion.div>
@@ -131,6 +137,7 @@ export default function GamesPage() {
       {activeArcadeGame && (
         <ArcadeModal isOpen={true} onClose={() => setActiveArcadeGame(null)} gameUrl={activeArcadeGame.url} gameTitle={activeArcadeGame.title} />
       )}
-    </div>
+      </div>
+    </AuthGate>
   );
 }

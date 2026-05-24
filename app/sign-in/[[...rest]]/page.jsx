@@ -1,280 +1,335 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { SignIn } from "@clerk/nextjs";
+import React, { useEffect, useRef, useState } from "react";
+import { SignIn, useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Film, Music, Gamepad2, Sparkles, Star, Shield, ArrowLeft, Zap, Play } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Film, Music, Gamepad2, Sparkles, Shield, Zap, Star } from "lucide-react";
 
-const FEATURES = [
-  { icon: Film,     label: "20+ Premium Movies & Series",  color: "#a78bfa" },
-  { icon: Music,    label: "25+ Music Tracks",              color: "#22d3ee" },
-  { icon: Gamepad2, label: "Arcade & AAA Games",            color: "#f472b6" },
-  { icon: Star,     label: "Personal Watchlist",            color: "#fbbf24" },
-  { icon: Shield,   label: "Secure & Private",              color: "#34d399" },
-  { icon: Sparkles, label: "AI-Powered Discovery",          color: "#fb7185" },
-];
+/* ── Animated star particle ───────────────────────────────────────────── */
+function StarField() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let W = (canvas.width = canvas.offsetWidth);
+    let H = (canvas.height = canvas.offsetHeight);
+    const stars = Array.from({ length: 120 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.4 + 0.3,
+      a: Math.random(),
+      speed: Math.random() * 0.003 + 0.001,
+    }));
+    let raf;
+    const draw = () => {
+      ctx.clearRect(0, 0, W, H);
+      stars.forEach((s) => {
+        s.a += s.speed;
+        const alpha = 0.3 + 0.7 * Math.abs(Math.sin(s.a));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(168,139,250,${alpha})`;
+        ctx.fill();
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
+    const onResize = () => {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />;
+}
 
-const ROTATING_WORDS = ["Movies", "Music", "Games", "Entertainment"];
+/* ── Feature badge ────────────────────────────────────────────────────── */
+function FeatureBadge({ icon: Icon, label, color, delay }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      className={`flex items-center gap-3 px-4 py-3 rounded-2xl border backdrop-blur-sm ${color}`}
+    >
+      <Icon className="w-4 h-4 flex-shrink-0" />
+      <span className="text-sm font-semibold">{label}</span>
+    </motion.div>
+  );
+}
 
-export default function SignInCatchAllPage() {
-  const [wordIndex, setWordIndex] = useState(0);
+export default function SignInPage() {
+  const { user, isSignedIn } = useUser();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = (searchParams?.get("redirectTo")) || "/dashboard";
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(() => setWordIndex((i) => (i + 1) % ROTATING_WORDS.length), 2200);
-    return () => clearInterval(t);
+    setMounted(true);
+    // Analytics
+    fetch("/api/analytics/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "sign_in_page_view" }),
+    }).catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (isSignedIn && user) {
+      fetch("/api/analytics/track", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "sign_in", meta: { userId: user.id } }),
+      }).catch(() => {});
+    }
+  }, [isSignedIn, user]);
+
+  const features = [
+    { icon: Film, label: "Cinematic movie streaming", color: "border-purple-500/30 bg-purple-950/20 text-purple-300", delay: 0.6 },
+    { icon: Music, label: "Shared music listening rooms", color: "border-cyan-500/30 bg-cyan-950/20 text-cyan-300", delay: 0.7 },
+    { icon: Gamepad2, label: "Retro & AAA arcade games", color: "border-pink-500/30 bg-pink-950/20 text-pink-300", delay: 0.8 },
+    { icon: Sparkles, label: "AI mood recommendations", color: "border-amber-500/30 bg-amber-950/20 text-amber-300", delay: 0.9 },
+    { icon: Shield, label: "Privacy-first, no tracking", color: "border-emerald-500/30 bg-emerald-950/20 text-emerald-300", delay: 1.0 },
+    { icon: Zap, label: "Real-time sync & watch parties", color: "border-indigo-500/30 bg-indigo-950/20 text-indigo-300", delay: 1.1 },
+  ];
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        backgroundColor: "#020617",
-        overflow: "hidden",
-      }}
-    >
-      {/* ── LEFT BRANDING PANEL ─────────────────────────────────────── */}
-      <div
-        style={{
-          width: "50%",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          position: "relative",
-          padding: "56px",
-          overflow: "hidden",
-        }}
-        className="hidden lg:flex"
-      >
-        {/* Gradient background */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg, rgba(88,28,135,0.35) 0%, rgba(15,23,42,1) 50%, rgba(8,47,73,0.25) 100%)" }} />
+    <div className="min-h-screen flex bg-[#020617] overflow-hidden">
+      {/* ── LEFT PANEL: Branding ─────────────────────────────────────────── */}
+      <div className="hidden lg:flex w-[55%] relative flex-col justify-between p-12 overflow-hidden">
+        {/* Deep space background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at 30% 20%, rgba(139,92,246,0.18) 0%, transparent 55%), radial-gradient(ellipse at 70% 80%, rgba(6,182,212,0.12) 0%, transparent 55%), radial-gradient(ellipse at 50% 50%, rgba(236,72,153,0.06) 0%, transparent 60%), linear-gradient(135deg, #010b1a 0%, #020617 60%, #01050f 100%)",
+          }}
+        />
+        {/* Animated star field */}
+        {mounted && <StarField />}
 
-        {/* Grid lines */}
-        <div style={{
-          position: "absolute", inset: 0, pointerEvents: "none",
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }} />
-
-        {/* Top border line */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "1px", background: "linear-gradient(90deg, transparent, rgba(139,92,246,0.6), transparent)" }} />
-
-        {/* Animated orbs */}
+        {/* Animated glowing orbs */}
         <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
-          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-          style={{ position: "absolute", top: "20%", left: "-60px", width: "340px", height: "340px", borderRadius: "50%", background: "rgba(139,92,246,0.15)", filter: "blur(60px)" }}
+          animate={{ scale: [1, 1.15, 1], rotate: [0, 15, 0] }}
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+          className="absolute top-[15%] left-[20%] w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%)", filter: "blur(40px)" }}
         />
         <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 1.5 }}
-          style={{ position: "absolute", bottom: "20%", right: "20px", width: "260px", height: "260px", borderRadius: "50%", background: "rgba(6,182,212,0.12)", filter: "blur(50px)" }}
+          animate={{ scale: [1, 1.2, 1], rotate: [0, -20, 0] }}
+          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[20%] right-[10%] w-64 h-64 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(6,182,212,0.18) 0%, transparent 70%)", filter: "blur(40px)" }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 }}
+          className="absolute top-[55%] left-[10%] w-48 h-48 rounded-full pointer-events-none"
+          style={{ background: "radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)", filter: "blur(30px)" }}
         />
 
-        {/* ── CONTENT ── */}
-        <div style={{ position: "relative", zIndex: 10 }}>
-          {/* Back link */}
-          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#64748b", fontSize: "12px", fontFamily: "monospace", marginBottom: "40px", textDecoration: "none" }}
-            onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
-            onMouseLeave={(e) => e.currentTarget.style.color = "#64748b"}
-          >
-            <ArrowLeft style={{ width: 13, height: 13 }} />
-            Back to home
-          </Link>
+        {/* Grid overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-30"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(139,92,246,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.05) 1px, transparent 1px)",
+            backgroundSize: "50px 50px",
+          }}
+        />
 
-          {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "44px" }}>
-            <div style={{ position: "relative", width: 44, height: 44, borderRadius: "12px", background: "linear-gradient(135deg, #7c3aed, #22d3ee)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 24px rgba(139,92,246,0.5)" }}>
-              <span style={{ fontWeight: 900, color: "#fff", fontSize: "16px", fontFamily: "monospace" }}>SF</span>
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10"
+        >
+          <Link href="/" className="inline-flex items-center gap-3 group">
+            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center shadow-lg">
+              <span className="font-black text-white text-sm font-mono">SF</span>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 blur-sm opacity-60 animate-pulse" />
             </div>
-            <span style={{ fontSize: "22px", fontWeight: 900, letterSpacing: "-0.04em", color: "#fff", fontFamily: "monospace" }}>
-              STREAM<span style={{ background: "linear-gradient(90deg, #a78bfa, #22d3ee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>FLARE</span>
+            <span className="text-2xl font-black tracking-tighter text-white font-mono group-hover:text-cyan-400 transition-colors">
+              STREAM<span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">FLARE</span>
             </span>
-          </div>
+          </Link>
+        </motion.div>
 
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ fontSize: "clamp(32px,3.5vw,48px)", fontWeight: 900, color: "#fff", lineHeight: 1.2, marginBottom: "16px" }}
-          >
-            Your cinema.
-            <br />
-            <span style={{ background: "linear-gradient(90deg, #a78bfa, #22d3ee, #f472b6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-              Your stage.
-            </span>
-            <br />
-            Your arcade.
-          </motion.h1>
-
-          {/* Rotating word pill */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "36px" }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#a78bfa", animation: "ping 1.5s ease infinite" }} />
-            <span style={{ fontSize: "13px", color: "#94a3b8", fontFamily: "monospace" }}>
-              Unlock your{" "}
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={ROTATING_WORDS[wordIndex]}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ display: "inline-block", color: "#a78bfa", fontWeight: 700 }}
-                >
-                  {ROTATING_WORDS[wordIndex]}
-                </motion.span>
-              </AnimatePresence>
-              {" "}hub
-            </span>
-          </div>
-
-          {/* Feature grid */}
+        {/* Hero copy */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center py-12">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
           >
-            {FEATURES.map((f, i) => (
-              <motion.div
-                key={f.label}
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.07 }}
-                style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 0" }}
-              >
-                <div style={{ width: 30, height: 30, borderRadius: "8px", border: "1px solid #1e293b", background: "#0f172a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <f.icon style={{ width: 14, height: 14, color: f.color }} />
-                </div>
-                <span style={{ fontSize: "11px", color: "#cbd5e1", fontFamily: "monospace" }}>{f.label}</span>
-              </motion.div>
-            ))}
+            <p className="text-xs font-mono text-purple-400 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+              <span className="w-6 h-px bg-purple-500" />
+              Premium Entertainment Hub
+            </p>
+            <h1 className="text-5xl xl:text-6xl font-black text-white leading-tight tracking-tight mb-6">
+              Everything you<br />
+              love to{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent">
+                stream.
+              </span>
+            </h1>
+            <p className="text-slate-400 text-lg leading-relaxed max-w-md">
+              Movies, music, and retro arcade games — all in one beautifully crafted, AI-powered hub.
+              Sign in to unlock the complete experience.
+            </p>
           </motion.div>
+
+          {/* Feature badges */}
+          <div className="mt-10 grid grid-cols-1 xl:grid-cols-2 gap-3 max-w-lg">
+            {features.map((f) => (
+              <FeatureBadge key={f.label} {...f} />
+            ))}
+          </div>
         </div>
 
-        {/* Testimonial */}
+        {/* Bottom stat strip */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          style={{ position: "relative", zIndex: 10, background: "rgba(15,23,42,0.5)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "20px", padding: "20px" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="relative z-10 flex items-center gap-8 pt-6 border-t border-slate-800/60"
         >
-          <div style={{ display: "flex", gap: "3px", marginBottom: "12px" }}>
-            {[...Array(5)].map((_, i) => <Star key={i} style={{ width: 13, height: 13, color: "#fbbf24", fill: "#fbbf24" }} />)}
-          </div>
-          <p style={{ fontSize: "13px", color: "#cbd5e1", lineHeight: 1.6, marginBottom: "14px" }}>
-            "StreamFlare is unlike any other platform. The glassmorphic UI and seamless movie + music + games experience is truly cinematic."
-          </p>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <div style={{ width: 34, height: 34, borderRadius: "50%", background: "linear-gradient(135deg, #7c3aed, #22d3ee)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, color: "#fff" }}>A</div>
-            <div>
-              <p style={{ fontSize: "12px", fontWeight: 600, color: "#fff", margin: 0 }}>Aria Sterling</p>
-              <p style={{ fontSize: "10px", color: "#64748b", fontFamily: "monospace", margin: 0 }}>Early Access Member</p>
+          {[
+            { value: "20+", label: "Movies" },
+            { value: "50+", label: "Songs" },
+            { value: "6+", label: "Games" },
+          ].map(({ value, label }) => (
+            <div key={label} className="text-center">
+              <p className="text-2xl font-black text-white font-mono">{value}</p>
+              <p className="text-[10px] text-slate-600 uppercase tracking-widest font-mono">{label}</p>
             </div>
+          ))}
+          <div className="ml-auto flex items-center gap-2 text-xs text-slate-600">
+            <Star className="w-3 h-3 text-amber-500" fill="currentColor" />
+            <span className="font-mono">Trusted by creators worldwide</span>
           </div>
         </motion.div>
       </div>
 
-      {/* ── RIGHT PANEL: CLERK SIGN-IN ──────────────────────────────── */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "40px 24px",
-          position: "relative",
-        }}
-      >
-        {/* Radial glow */}
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 60% 40%, rgba(139,92,246,0.07) 0%, transparent 65%)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(2,6,23,0.8) 100%)", pointerEvents: "none" }} />
+      {/* ── RIGHT PANEL: Auth form ───────────────────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 relative">
+        {/* Subtle right-panel glow */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 40%, rgba(139,92,246,0.07) 0%, transparent 65%)",
+          }}
+        />
 
-        {/* Mobile logo (shown on small screens) */}
-        <div style={{ position: "relative", zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "28px" }} className="lg:hidden">
-          <div style={{ width: 44, height: 44, borderRadius: "12px", background: "linear-gradient(135deg, #7c3aed, #22d3ee)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "10px", boxShadow: "0 0 24px rgba(139,92,246,0.5)" }}>
-            <span style={{ fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>SF</span>
-          </div>
-          <span style={{ fontSize: "20px", fontWeight: 900, letterSpacing: "-0.04em", color: "#fff", fontFamily: "monospace" }}>
-            STREAM<span style={{ background: "linear-gradient(90deg, #a78bfa, #22d3ee)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>FLARE</span>
-          </span>
+        {/* Mobile logo */}
+        <div className="lg:hidden absolute top-6 left-6">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center">
+              <span className="font-black text-white text-xs font-mono">SF</span>
+            </div>
+            <span className="text-lg font-black text-white font-mono tracking-tighter">
+              STREAM<span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">FLARE</span>
+            </span>
+          </Link>
         </div>
 
-        {/* Label above form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "440px" }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className="w-full max-w-md relative z-10"
         >
-          <div style={{ textAlign: "center", marginBottom: "18px" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-              <div style={{ padding: "6px 10px", borderRadius: 999, background: "linear-gradient(90deg,#7c3aed,#06b6d4)", color: "#071022", fontWeight: 800, fontSize: 12, letterSpacing: "0.08em" }}>PREMIUM</div>
-            </div>
-            <p style={{ fontSize: "11px", fontFamily: "monospace", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.18em", margin: "10px 0 6px" }}>Welcome back</p>
-            <h2 style={{ fontSize: "28px", fontWeight: 900, color: "#fff", margin: 0 }}>Sign in to your hub</h2>
-            <p style={{ marginTop: 8, color: "#b6c2d8", fontSize: 13 }}>Access exclusive movies, music and games — beautifully curated.</p>
+          {/* Header */}
+          <div className="mb-8 text-center lg:text-left">
+            <h2 className="text-3xl font-black text-white mb-2 tracking-tight">
+              Welcome back
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Sign in to access your personal entertainment hub
+            </p>
           </div>
 
-          {/* Clerk SignIn component (premium card) */}
-          <div className="clerk-override" style={{ borderRadius: "22px", overflow: "hidden", border: "1px solid rgba(255,255,255,0.04)", boxShadow: "0 40px 80px rgba(2,6,23,0.7)", background: "linear-gradient(180deg, rgba(8,20,34,0.6), rgba(6,10,20,0.55))", padding: 18 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg,#7c3aed,#06b6d4)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 30px rgba(99,102,241,0.14)" }}>
-                <span style={{ fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>SF</span>
-              </div>
-              <div>
-                <div style={{ color: "#dbeafe", fontWeight: 800 }}>StreamFlare Hub</div>
-                <div style={{ color: "#94a3b8", fontSize: 12 }}>Secure sign-in</div>
-              </div>
+          {/* Clerk sign-in card */}
+          <div
+            className="rounded-3xl overflow-hidden"
+            style={{
+              background: "rgba(7, 10, 22, 0.8)",
+              border: "1px solid rgba(139,92,246,0.2)",
+              boxShadow: "0 0 60px rgba(139,92,246,0.08), inset 0 1px 0 rgba(255,255,255,0.05)",
+              backdropFilter: "blur(24px)",
+            }}
+          >
+            <div className="px-6 pt-6 pb-2">
+              {/* Top accent line */}
+              <div className="h-px bg-gradient-to-r from-transparent via-purple-500/60 to-transparent mb-6" />
             </div>
 
-            <SignIn
-              fallbackRedirectUrl="/dashboard"
-              afterSignInUrl="/dashboard"
-              appearance={{
+            <div className="px-4 pb-6">
+              <SignIn
+                routing="path"
+                path="/sign-in"
+                appearance={{
                   variables: {
-                    colorPrimary: "#7c3aed",
-                    colorBackground: "#071022",
-                    colorText: "#e6eef9",
+                    colorPrimary: "#9b5cff",
+                    colorBackground: "transparent",
+                    colorText: "#e2e8f0",
                     colorTextSecondary: "#94a3b8",
-                    colorInputBackground: "#071225",
-                    colorInputText: "#e6eef9",
+                    colorInputBackground: "rgba(15,23,42,0.7)",
+                    colorInputText: "#e2e8f0",
                     colorNeutral: "#6b7280",
-                    borderRadius: "12px",
+                    borderRadius: "14px",
                     fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif",
-                    fontSize: "15px",
+                    fontSize: "14px",
                   },
                   elements: {
                     rootBox: "w-full",
-                    card: "bg-transparent border-0 shadow-none",
-                    headerTitle: "text-white font-extrabold",
-                    headerSubtitle: "text-slate-400",
-                    socialButtonsBlockButton: "bg-gradient-to-r from-slate-900 to-slate-800 border border-white/5 text-white shadow-lg",
-                    socialButtonsBlockButtonText: "text-white",
-                    dividerLine: "bg-white/5",
-                    dividerText: "text-slate-400",
-                    formFieldLabel: "text-slate-300",
-                    formFieldInput: "bg-[#071225] border border-white/5 text-white",
-                    formButtonPrimary: "bg-gradient-to-r from-purple-600 to-cyan-400 font-extrabold shadow-xl",
-                    footerActionLink: "text-purple-300",
-                    footerActionText: "text-slate-400",
-                    identityPreviewText: "text-white",
-                    identityPreviewEditButton: "text-purple-300",
-                    otpCodeFieldInput: "bg-[#071225] border border-white/5 text-white",
-                    alertText: "text-white",
-                    formResendCodeLink: "text-purple-300",
+                    card: "bg-transparent shadow-none border-none p-0",
+                    header: "hidden",
+                    headerTitle: "hidden",
+                    headerSubtitle: "hidden",
+                    socialButtonsBlockButton:
+                      "flex items-center justify-center gap-3 rounded-xl px-4 py-3 font-semibold text-sm text-white transition-all duration-300 hover:opacity-90",
+                    socialButtonsBlockButtonText: "text-white font-semibold text-sm",
+                    dividerLine: "bg-slate-800/60",
+                    dividerText: "text-slate-600 text-xs font-mono",
+                    formFieldLabel: "text-slate-400 text-xs font-medium uppercase tracking-wider mb-1",
+                    formFieldInput:
+                      "rounded-xl px-4 py-3 text-white text-sm border border-slate-700/50 focus:border-purple-500/60 focus:ring-0 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)] transition-all duration-300",
+                    formButtonPrimary:
+                      "rounded-xl px-6 py-3 font-bold text-white text-sm transition-all duration-300 hover:opacity-90 hover:shadow-[0_0_25px_rgba(139,92,246,0.4)]",
+                    footerActionLink: "text-purple-400 hover:text-purple-300 font-semibold",
+                    footerActionText: "text-slate-500 text-sm",
+                    footer: "mt-4",
+                    identityPreviewText: "text-slate-300",
+                    identityPreviewEditButton: "text-purple-400",
+                    formFieldSuccessText: "text-emerald-400",
+                    formFieldErrorText: "text-rose-400",
+                    alertText: "text-rose-400",
+                    otpCodeFieldInput:
+                      "rounded-xl border border-slate-700 bg-slate-900/60 text-white text-center font-mono text-lg",
                   },
                 }}
-            />
+                fallbackRedirectUrl={redirectTo}
+              />
             </div>
+          </div>
 
-          {/* Footer note */}
-          <p style={{ textAlign: "center", fontSize: "11px", color: "#334155", marginTop: "20px", fontFamily: "monospace" }}>
-            New to StreamFlare?{" "}
-            <Link href="/sign-up" style={{ color: "#a78bfa", textDecoration: "none" }}>Create a free account</Link>
-          </p>
+          {/* Footer */}
+          <div className="mt-6 text-center">
+            <p className="text-xs text-slate-600 font-mono">
+              © {new Date().getFullYear()} StreamFlare · All rights reserved
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>

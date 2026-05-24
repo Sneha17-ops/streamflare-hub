@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = 'force-dynamic';
+
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -101,6 +103,6 @@ export default function MoviesPage() {
           <p className="text-xs text-slate-500 max-w-xs">Refine your query parameters or reset categories to browse our cinema collections.</p>
         </div>
       )}
-    </div>
+      </div>
   );
 }

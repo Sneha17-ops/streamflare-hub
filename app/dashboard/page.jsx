@@ -1,7 +1,9 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import React, { useMemo } from "react";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -12,8 +14,9 @@ import {
 } from "lucide-react";
 import { useUserStore, useMusicStore } from "@/store";
 import BlurImage from "@/components/BlurImage";
+import AuthGate from "@/components/AuthGate";
 
-const ActivityChart = dynamic(() => import("@/components/ActivityChart"), { ssr: false });
+const ActivityChart = nextDynamic(() => import("@/components/ActivityChart"), { ssr: false });
 
 /* ── animated counter ────────────────────────────────── */
 function Counter({ value, suffix = "" }) {
@@ -176,7 +179,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-8 select-none pb-28">
+    <AuthGate>
+      <div className="space-y-8 select-none pb-28">
 
       {/* ── HERO PROFILE HEADER ───────────────────────── */}
       <motion.div
@@ -471,6 +475,7 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-    </div>
+      </div>
+    </AuthGate>
   );
 }

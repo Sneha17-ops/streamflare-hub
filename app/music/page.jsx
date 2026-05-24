@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = 'force-dynamic';
+
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,13 +11,17 @@ import {
 import { fetchTrendingSongs } from "../../lib/api";
 import { useMusicStore, useUserStore } from "../../store";
 import BlurImage from "../../components/BlurImage";
+import nextDynamic from "next/dynamic";
+import AuthGate from "@/components/AuthGate";
+
+const MusicVisualizer = nextDynamic(() => import("../../components/MusicVisualizer"), { ssr: false });
 
 const fmtDur = (s) => {
   const n = parseInt(s);
   return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
 };
 
-const LANGUAGES = ["All", "Hindi", "English", "Punjabi", "Tamil", "Telugu", "Bengali", "Gujarati", "Bhojpuri", "Urdu", "Marathi", "Kannada", "Malayalam", "Assamese", "Nepali"];
+const LANGUAGES = ["All", "Hindi", "English", "Punjabi", "Tamil", "Telugu", "Bengali", "Gujarati", "Bhojpuri", "Urdu", "Marathi", "Kannada", "Malayalam", "Assamese", "Nepali", "Korean", "Spanish", "Arabic", "Japanese", "Odia", "Haryanvi", "Rajasthani"];
 
 function SongCard({ song, index, onPlay, isActive, isPlaying }) {
   const { favorites, addFavorite, removeFavorite } = useUserStore();
@@ -135,7 +141,10 @@ export default function MusicPage() {
   );
 
   return (
-    <div className="space-y-8 select-none">
+    <AuthGate>
+      <div className="space-y-8 select-none">
+
+      <MusicVisualizer track={currentTrack} isPlaying={isPlaying} className="shadow-[0_0_50px_rgba(34,211,238,0.12)]" />
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <motion.div
@@ -256,8 +265,8 @@ export default function MusicPage() {
             className="glass-input w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-600"
           />
         </div>
-        <div className="flex gap-2 flex-wrap">
-          {langOptions.slice(0, 8).map((lang) => (
+        <div className="flex gap-2 flex-wrap max-h-24 overflow-y-auto pr-1 scrollbar-hide">
+          {langOptions.map((lang) => (
             <button
               key={lang}
               onClick={() => setSelectedLanguage(lang)}
@@ -322,6 +331,7 @@ export default function MusicPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </AuthGate>
   );
 }
