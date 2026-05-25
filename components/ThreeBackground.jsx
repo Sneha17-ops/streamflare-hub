@@ -10,10 +10,15 @@ export default function ThreeBackground() {
   const pathname = usePathname();
   const selectedMood = useLayoutStore((state) => state.selectedMood);
   const moodRef = useRef(selectedMood);
+  const pathnameRef = useRef(pathname);
 
   useEffect(() => {
     moodRef.current = selectedMood;
   }, [selectedMood]);
+
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -158,7 +163,7 @@ export default function ThreeBackground() {
       };
     };
 
-    let theme = getColorTheme(pathname, moodRef.current);
+    let theme = getColorTheme(pathnameRef.current, moodRef.current);
 
     for (let i = 0; i < particleCount; i++) {
       // Create wave-like sheet in 3D
@@ -253,7 +258,7 @@ export default function ThreeBackground() {
       const colorAttr = geometry.attributes.color;
 
       // Smooth transition color themes if path or mood changed
-      const currentTheme = getColorTheme(pathname, moodRef.current);
+      const currentTheme = getColorTheme(pathnameRef.current, moodRef.current);
       theme.primary.lerp(currentTheme.primary, 0.03);
       theme.secondary.lerp(currentTheme.secondary, 0.03);
       theme.ambient.lerp(currentTheme.ambient, 0.03);
@@ -314,7 +319,7 @@ export default function ThreeBackground() {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [pathname]);
+  }, []);
 
   return (
     <div
