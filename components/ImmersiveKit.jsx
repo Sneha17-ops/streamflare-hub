@@ -58,13 +58,42 @@ export function GlassPanel({ children, className = "" }) {
 }
 
 export function MoodCard({ mood, active, onClick, score }) {
+  const activeStyles = {
+    radiant: "border-amber-400/50 bg-amber-400/10 shadow-[0_0_35px_rgba(251,191,36,0.2)]",
+    blue: "border-blue-400/50 bg-blue-400/10 shadow-[0_0_35px_rgba(96,165,250,0.2)]",
+    rose: "border-rose-400/50 bg-rose-400/10 shadow-[0_0_35px_rgba(251,113,133,0.2)]",
+    crimson: "border-red-400/50 bg-red-400/10 shadow-[0_0_35px_rgba(248,113,113,0.2)]",
+    teal: "border-teal-400/50 bg-teal-400/10 shadow-[0_0_35px_rgba(45,212,191,0.2)]",
+    violet: "border-violet-400/50 bg-violet-400/10 shadow-[0_0_35px_rgba(167,139,250,0.2)]",
+    indigo: "border-indigo-400/50 bg-indigo-400/10 shadow-[0_0_35px_rgba(129,140,248,0.2)]",
+    emerald: "border-emerald-400/50 bg-emerald-400/10 shadow-[0_0_35px_rgba(52,211,153,0.2)]",
+    gold: "border-yellow-400/50 bg-yellow-400/10 shadow-[0_0_35px_rgba(250,204,21,0.2)]",
+    mist: "border-slate-300/50 bg-slate-300/10 shadow-[0_0_35px_rgba(203,213,225,0.2)]",
+  };
+
+  const activeClass = activeStyles[mood.tone] || activeStyles.teal;
+
+  const toneTextColors = {
+    radiant: "text-amber-400",
+    blue: "text-blue-400",
+    rose: "text-rose-400",
+    crimson: "text-red-400",
+    teal: "text-cyan-400",
+    violet: "text-violet-400",
+    indigo: "text-indigo-400",
+    emerald: "text-emerald-400",
+    gold: "text-yellow-400",
+    mist: "text-slate-300",
+  };
+  const activeTextColor = toneTextColors[mood.tone] || "text-cyan-400";
+
   return (
     <motion.button
       whileHover={{ y: -6, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={`group relative overflow-hidden rounded-3xl border p-5 text-left transition ${
-        active ? "border-cyan-400/50 bg-cyan-400/10 shadow-[0_0_35px_rgba(34,211,238,0.2)]" : "border-white/10 bg-white/5 hover:border-white/20"
+        active ? activeClass : "border-white/10 bg-white/5 hover:border-white/20"
       }`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${mood.colors} opacity-0 transition-opacity duration-500 group-hover:opacity-15`} />
@@ -78,7 +107,7 @@ export function MoodCard({ mood, active, onClick, score }) {
         </div>
         <div className="flex flex-col items-end gap-2 text-right">
           <span className="rounded-full border border-white/10 bg-black/20 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-slate-200">AI</span>
-          <span className="text-xs text-slate-400">{score ? `${score} signal` : "Dynamic"}</span>
+          <span className={`text-xs ${active ? activeTextColor + " font-bold" : "text-slate-400"}`}>{score ? `${score} signal` : "Dynamic"}</span>
         </div>
       </div>
     </motion.button>

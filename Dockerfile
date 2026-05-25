@@ -1,7 +1,5 @@
 
 # STAGE 1: INSTALL DEPENDENCIES
-
-
 FROM node:18-alpine AS deps
 
 RUN apk add --no-cache libc6-compat
@@ -14,8 +12,6 @@ RUN npm install --legacy-peer-deps
 
 
 # STAGE 2: BUILD APP
-
-
 FROM node:18-alpine AS builder
 
 WORKDIR /app
@@ -38,10 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 
-
 # STAGE 3: RUNNER
-
-
 FROM node:18-alpine AS runner
 
 WORKDIR /app
@@ -49,15 +42,21 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy standalone output (produced by output: 'standalone')
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 
 # Expose application port
 EXPOSE 3000
 
-# Copy compiled files
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-
-# Start app
-CMD ["npm", "run", "start"]
+# Start app using standalone server
+CMD ["node", "server.js"]

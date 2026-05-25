@@ -1,22 +1,26 @@
 
-
 services:
- 
+
+  # 1. NEXT.JS APPLICATION
   app:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_b24tbWFzdG9kb24tNzQuY2xlcmsuYWNjb3VudHMuZGV2JA
+        - CLERK_SECRET_KEY=sk_test_k4I4UNogc2PoJgWRmDKByh8bXvuSMBvalx5WKzFbOc
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
       - REDIS_ENABLED=true
-      - MONGODB_URI=mongodb://127.0.0.1:27017/streamflare
+      - MONGODB_URI=mongodb://mongo:27017/streamflare
       - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_b24tbWFzdG9kb24tNzQuY2xlcmsuYWNjb3VudHMuZGV2JA
       - CLERK_SECRET_KEY=sk_test_k4I4UNogc2PoJgWRmDKByh8bXvuSMBvalx5WKzFbOc
     depends_on:
       - redis
+      - mongo
     restart: always
 
   # 2. REAL-TIME SOCKET.IO WEBSOCKET BROKER
@@ -25,12 +29,29 @@ services:
     working_dir: /app
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - "3001:3001"
-    command: node websocket-server.js
+    command: sh -c "npm install --legacy-peer-deps && node websocket-server.js"
+    depends_on:
+      - app
     restart: always
 
   # 3. HIGH-PERFORMANCE REDIS CACHE ENGINE
   redis:
     image: redis:alpine
+    ports:
+      - "6379:6379"
     restart: always
+
+  # 4. MONGODB DATABASE
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:

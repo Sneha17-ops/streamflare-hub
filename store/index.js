@@ -8,7 +8,9 @@ export const useLayoutStore = create((set) => ({
   setIsPageLoading: (loading) => set({ isPageLoading: loading }),
   spotlightX: 0,
   spotlightY: 0,
-  setSpotlightCoords: (x, y) => set({ spotlightX: x, spotlightY: y })
+  setSpotlightCoords: (x, y) => set({ spotlightX: x, spotlightY: y }),
+  selectedMood: "Chill",
+  setSelectedMood: (mood) => set({ selectedMood: mood })
 }));
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

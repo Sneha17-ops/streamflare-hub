@@ -3,10 +3,17 @@
 import React, { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import * as THREE from "three";
+import { useLayoutStore } from "../store";
 
 export default function ThreeBackground() {
   const containerRef = useRef(null);
   const pathname = usePathname();
+  const selectedMood = useLayoutStore((state) => state.selectedMood);
+  const moodRef = useRef(selectedMood);
+
+  useEffect(() => {
+    moodRef.current = selectedMood;
+  }, [selectedMood]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -37,23 +44,94 @@ export default function ThreeBackground() {
 
     const initialPositions = [];
 
+    const getMoodThemeColors = (mood) => {
+      switch (mood) {
+        case "Happy":
+          return {
+            primary: new THREE.Color("#facc15"),
+            secondary: new THREE.Color("#f97316"),
+            ambient: new THREE.Color("#3b0764"), // dark purple
+          };
+        case "Sad":
+          return {
+            primary: new THREE.Color("#38bdf8"),
+            secondary: new THREE.Color("#6366f1"),
+            ambient: new THREE.Color("#0f172a"), // slate-900
+          };
+        case "Romantic":
+          return {
+            primary: new THREE.Color("#fb7185"),
+            secondary: new THREE.Color("#d946ef"),
+            ambient: new THREE.Color("#4c0519"), // dark rose
+          };
+        case "Action":
+          return {
+            primary: new THREE.Color("#ef4444"),
+            secondary: new THREE.Color("#f97316"),
+            ambient: new THREE.Color("#450a0a"), // dark red
+          };
+        case "Chill":
+          return {
+            primary: new THREE.Color("#22d3ee"),
+            secondary: new THREE.Color("#14b8a6"),
+            ambient: new THREE.Color("#022c22"), // dark emerald
+          };
+        case "Horror":
+          return {
+            primary: new THREE.Color("#8b5cf6"),
+            secondary: new THREE.Color("#4c1d95"), // purple
+            ambient: new THREE.Color("#030712"), // very dark gray/black
+          };
+        case "Emotional":
+          return {
+            primary: new THREE.Color("#818cf8"),
+            secondary: new THREE.Color("#a855f7"),
+            ambient: new THREE.Color("#2e1065"), // dark violet
+          };
+        case "Motivational":
+          return {
+            primary: new THREE.Color("#34d399"),
+            secondary: new THREE.Color("#06b6d4"),
+            ambient: new THREE.Color("#172554"), // dark blue
+          };
+        case "Party":
+          return {
+            primary: new THREE.Color("#facc15"),
+            secondary: new THREE.Color("#ea580c"),
+            ambient: new THREE.Color("#500724"), // dark pink/red
+          };
+        case "Relaxing":
+          return {
+            primary: new THREE.Color("#cbd5e1"),
+            secondary: new THREE.Color("#67e8f9"),
+            ambient: new THREE.Color("#042f2e"), // dark teal
+          };
+        default:
+          return null;
+      }
+    };
+
     // Base colors based on active pages
-    const getColorTheme = (path) => {
+    const getColorTheme = (path, currentMood) => {
       const p = path || "";
+      if (p.includes("/moods")) {
+        const moodColors = getMoodThemeColors(currentMood);
+        if (moodColors) return moodColors;
+      }
       if (p.includes("/movies")) {
-        // Horror / Action theme: Crimson red & Purple
+        // Cinematic theme: Crimson red & Pink highlights over dark gray/black
         return {
           primary: new THREE.Color("#ec4899"), // pink
           secondary: new THREE.Color("#ef4444"), // red
-          ambient: new THREE.Color("#6b21a8"), // purple
+          ambient: new THREE.Color("#030712"), // cinematic dark gray/black
         };
       }
       if (p.includes("/music") || p.includes("/rooms")) {
-        // Chill Lofi / Audio theme: Electric Cyan & Teal
+        // Spatial Audio theme: Electric Cyan & Blue highlights over dark navy/slate
         return {
           primary: new THREE.Color("#22d3ee"), // cyan
-          secondary: new THREE.Color("#10b981"), // emerald
-          ambient: new THREE.Color("#0369a1"), // blue
+          secondary: new THREE.Color("#10b981"), // emerald/teal
+          ambient: new THREE.Color("#020617"), // dark navy/slate
         };
       }
       if (p.includes("/games") || p.includes("/arcade")) {
@@ -80,7 +158,7 @@ export default function ThreeBackground() {
       };
     };
 
-    let theme = getColorTheme(pathname);
+    let theme = getColorTheme(pathname, moodRef.current);
 
     for (let i = 0; i < particleCount; i++) {
       // Create wave-like sheet in 3D
@@ -174,11 +252,15 @@ export default function ThreeBackground() {
       const positionAttr = geometry.attributes.position;
       const colorAttr = geometry.attributes.color;
 
-      // Smooth transition color themes if path changed
-      const currentTheme = getColorTheme(pathname);
+      // Smooth transition color themes if path or mood changed
+      const currentTheme = getColorTheme(pathname, moodRef.current);
       theme.primary.lerp(currentTheme.primary, 0.03);
       theme.secondary.lerp(currentTheme.secondary, 0.03);
       theme.ambient.lerp(currentTheme.ambient, 0.03);
+
+      // Smoothly update fog and renderer clear colors to match ambient theme
+      scene.fog.color.copy(theme.ambient);
+      renderer.setClearColor(theme.ambient, 1);
 
       for (let i = 0; i < particleCount; i++) {
         const init = initialPositions[i];
