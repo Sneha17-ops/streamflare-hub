@@ -82,30 +82,17 @@ export default function ThumbnailStudioPage() {
   return (
     <AuthGate>
       <div className="space-y-8 pb-12">
-      <SectionHeader
-        kicker="AI Thumbnail Generator"
-        title="Build cinematic cover art concepts in seconds."
-        subtitle="Generate thumbnail briefs, prompt lines, and visual direction for movies, music, games, or social promos."
-        actionHref="/dashboard"
-        actionLabel="Back to dashboard"
-      />
+        <SectionHeader
+          kicker="AI Thumbnail Generator"
+          title="Build cinematic cover art concepts in seconds."
+          subtitle="Generate thumbnail briefs, prompt lines, and visual direction for movies, music, games, or social promos."
+          actionHref="/dashboard"
+          actionLabel="Back to dashboard"
+        />
 
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
         <GlassPanel className="p-6">
           <ThumbnailEditor initial={{ title: 'Midnight Aura', overlay: 'AI-generated thumbnail concept', palette }} />
         </GlassPanel>
-
-        <GlassPanel className="overflow-hidden p-0">
-          <div className="relative min-h-[34rem] p-6">
-            <div className="relative z-10 flex h-full flex-col justify-between gap-8">
-              <div className="max-w-xl space-y-4">
-                <h2 className="text-2xl font-black tracking-tight text-white md:text-3xl">Thumbnail Studio</h2>
-                <p className="max-w-lg text-sm leading-6 text-white/80 md:text-base">Export multiple aspect ratios for social platforms, fine-tune overlays, and save to cloud storage.</p>
-              </div>
-            </div>
-          </div>
-        </GlassPanel>
-      </div>
       </div>
     </AuthGate>
   );

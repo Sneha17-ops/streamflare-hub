@@ -27,10 +27,10 @@ export default function SpotlightCursor() {
     }
     if (p.includes("/music") || p.includes("/rooms")) {
       return {
-        border: "border-cyan-400/60",
-        bg: "bg-cyan-400/10",
-        shadow: "rgba(34, 211, 238, 0.6)",
-        trail: "bg-cyan-400/40"
+        border: "border-blue-500/60",
+        bg: "bg-blue-500/10",
+        shadow: "rgba(59, 130, 246, 0.6)",
+        trail: "bg-blue-500/40"
       };
     }
     if (p.includes("/games") || p.includes("/arcade")) {

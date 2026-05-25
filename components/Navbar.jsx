@@ -23,6 +23,7 @@ export default function Navbar() {
     { name: "Music", path: "/music", icon: Music },
     { name: "Games", path: "/games", icon: Gamepad2 },
     { name: "Moods", path: "/moods", icon: Sparkles },
+    { name: "Studio", path: "/thumbnails", icon: Wand2 },
     { name: "Dashboard", path: "/dashboard", icon: User }
   ];
 
@@ -109,11 +110,13 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <SignInButton mode="modal">
-              <button className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:scale-105 hover:shadow-neon-purple text-xs font-bold uppercase tracking-widest text-white smooth-transition">
-                Sign In
-              </button>
-            </SignInButton>
+            pathname === "/" && (
+              <SignInButton mode="modal">
+                <button className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:scale-105 hover:shadow-neon-purple text-xs font-bold uppercase tracking-widest text-white smooth-transition">
+                  Sign In
+                </button>
+              </SignInButton>
+            )
           )}
         </div>
       </div>

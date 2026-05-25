@@ -4,11 +4,14 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { THUMBNAIL_MODES, ASPECT_RATIOS, buildModePrompt, TYPOGRAPHY_PRESETS, getModePalette } from '@/lib/thumbnail-templates';
-import { Download, Sparkles, Image, Type, Palette, Layers, Wand2, RefreshCw, Copy } from 'lucide-react';
+import { Download, Sparkles, Image, Type, Palette, Layers, Wand2, RefreshCw, Copy, Activity, Check } from 'lucide-react';
+import { useUserStore } from '@/store';
 
 const GOOGLE_FONTS = ['Inter', 'Orbitron', 'Bebas Neue', 'Anton', 'Cinzel', 'Rajdhani', 'Bungee', 'Montserrat'];
 
 export default function ThumbnailEditor({ initial = {} }) {
+  const setCustomBanner = useUserStore((state) => state.setCustomBanner);
+
   const canvasRef = useRef(null);
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
@@ -31,6 +34,20 @@ export default function ThumbnailEditor({ initial = {} }) {
   const [activePanel, setActivePanel] = useState('mode'); // 'mode' | 'type' | 'color'
   const [exportMsg, setExportMsg] = useState('');
 
+  const [animationType, setAnimationType] = useState('orbit');
+  const [animationSpeed, setAnimationSpeed] = useState(1.0);
+
+  const animTypeRef = useRef('orbit');
+  const animSpeedRef = useRef(1.0);
+
+  useEffect(() => {
+    animTypeRef.current = animationType;
+  }, [animationType]);
+
+  useEffect(() => {
+    animSpeedRef.current = animationSpeed;
+  }, [animationSpeed]);
+
   // Build Three.js scene
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -38,7 +55,7 @@ export default function ThumbnailEditor({ initial = {} }) {
 
     const W = 1200, H = 675;
     const renderer = new THREE.WebGLRenderer({ canvas, preserveDrawingBuffer: true, antialias: true });
-    renderer.setSize(W, H);
+    renderer.setSize(W, H, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(palette[0], 1);
     rendererRef.current = renderer;
@@ -83,8 +100,48 @@ export default function ThumbnailEditor({ initial = {} }) {
     const clock = new THREE.Clock();
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-      if (meshRef.current) meshRef.current.rotation.z = Math.sin(t * 0.3) * 0.04;
+      const t = clock.getElapsedTime() * animSpeedRef.current;
+      const type = animTypeRef.current;
+
+      if (type !== 'none') {
+        if (type === 'orbit') {
+          if (meshRef.current) meshRef.current.rotation.z = Math.sin(t * 0.3) * 0.04;
+          // Rotate particles slightly
+          const ptsObj = scene.getObjectByProperty('type', 'Points');
+          if (ptsObj) ptsObj.rotation.y = t * 0.02;
+        } else if (type === 'pulse') {
+          const scale = 1.0 + Math.sin(t * 1.5) * 0.03;
+          if (meshRef.current) meshRef.current.scale.set(scale, scale, scale);
+        } else if (type === 'warp') {
+          // Move particles along Z axis towards camera, then reset
+          const ptsObj = scene.getObjectByProperty('type', 'Points');
+          if (ptsObj) {
+            ptsObj.rotation.y = t * 0.05;
+            const positions = ptsObj.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+              positions[i + 2] += 0.05 * animSpeedRef.current;
+              if (positions[i + 2] > 2) {
+                positions[i + 2] = -5; // reset far away
+              }
+            }
+            ptsObj.geometry.attributes.position.needsUpdate = true;
+          }
+        } else if (type === 'flow') {
+          if (meshRef.current) {
+            meshRef.current.rotation.x = -0.15 + Math.sin(t * 0.5) * 0.05;
+            meshRef.current.rotation.y = Math.cos(t * 0.5) * 0.05;
+          }
+        }
+      } else {
+        // Reset transformations if none
+        if (meshRef.current) {
+          meshRef.current.rotation.set(-0.15, 0, 0);
+          meshRef.current.scale.set(1, 1, 1);
+        }
+        const ptsObj = scene.getObjectByProperty('type', 'Points');
+        if (ptsObj) ptsObj.rotation.set(0, 0, 0);
+      }
+
       renderer.render(scene, camera);
     };
     animate();
@@ -290,6 +347,135 @@ export default function ThumbnailEditor({ initial = {} }) {
     setTimeout(() => setExportMsg(''), 2500);
   };
 
+  const applyToDashboard = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Create a temporary canvas matching the high-res 1200x675 size
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = 1200;
+    tempCanvas.height = 675;
+    const ctx = tempCanvas.getContext('2d');
+    if (!ctx) return;
+
+    // Draw the current WebGL frame onto the temp canvas
+    ctx.drawImage(canvas, 0, 0, 1200, 675);
+
+    // Setup typography context
+    ctx.save();
+    
+    const fontName = typography?.font?.split(',')[0]?.trim() || 'Inter';
+    const fontSize = typography?.size || 64;
+    const fontWeight = typography?.weight || 800;
+    const textStyle = typography?.style || 'uppercase';
+    const isUppercase = textStyle === 'uppercase';
+    const isCapitalize = textStyle === 'capitalize';
+    
+    // Apply drop shadow if enabled
+    if (shadowEnabled) {
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+      ctx.shadowBlur = 24;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 8;
+    }
+
+    // Format text case
+    let formattedText = headline;
+    if (isUppercase) formattedText = headline.toUpperCase();
+    else if (isCapitalize) {
+      formattedText = headline.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    ctx.fillStyle = textColor;
+    ctx.font = `${fontWeight} ${fontSize}px "${fontName}", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Calculate coordinates (dragPos is in percentages)
+    const textX = (dragPos.x / 100) * 1200;
+    const textY = (dragPos.y / 100) * 675;
+
+    // Handle multiline wrapping for long text
+    const maxTextWidth = 1000;
+    const words = formattedText.split(' ');
+    let line = '';
+    const lines = [];
+    const lineHeight = fontSize * 1.15;
+
+    for (let n = 0; n < words.length; n++) {
+      let testLine = line + words[n] + ' ';
+      let metrics = ctx.measureText(testLine);
+      let testWidth = metrics.width;
+      if (testWidth > maxTextWidth && n > 0) {
+        lines.push(line.trim());
+        line = words[n] + ' ';
+      } else {
+        line = testLine;
+      }
+    }
+    lines.push(line.trim());
+
+    // Draw text lines centered on target Y
+    const totalHeight = (lines.length - 1) * lineHeight;
+    let currentY = textY - totalHeight / 2;
+    
+    lines.forEach((l) => {
+      ctx.fillText(l, textX, currentY);
+      currentY += lineHeight;
+    });
+
+    ctx.restore();
+
+    // Draw overlay subtitle text at the bottom
+    if (overlay) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = `600 18px 'Inter', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 6;
+      ctx.fillText(overlay.toUpperCase(), 600, 640);
+      ctx.restore();
+    }
+
+    // Draw custom brand/mode badge at bottom left
+    ctx.save();
+    ctx.fillStyle = `${palette[0]}cc`;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    
+    const badgeText = currentMode?.name || 'CINEMATIC';
+    ctx.font = `900 12px 'Inter', sans-serif`;
+    const textWidth = ctx.measureText(badgeText).width;
+    const badgeW = textWidth + 24;
+    const badgeH = 26;
+    const badgeX = 40;
+    const badgeY = 610;
+
+    // Draw badge background
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 13);
+    } else {
+      ctx.rect(badgeX, badgeY, badgeW, badgeH);
+    }
+    ctx.fill();
+    ctx.stroke();
+
+    // Draw badge text
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(badgeText.toUpperCase(), badgeX + badgeW / 2, badgeY + badgeH / 2 + 1);
+    ctx.restore();
+
+    const data = tempCanvas.toDataURL('image/png');
+    setCustomBanner(data);
+    setExportMsg('Applied to Dashboard!');
+    setTimeout(() => setExportMsg(''), 2500);
+  };
+
   const copyPrompt = () => {
     navigator.clipboard.writeText(buildModePrompt(mode, headline, overlay));
     setExportMsg('Prompt copied!');
@@ -307,6 +493,7 @@ export default function ThumbnailEditor({ initial = {} }) {
             { id: 'mode', icon: Layers, label: 'Mode' },
             { id: 'type', icon: Type, label: 'Typography' },
             { id: 'color', icon: Palette, label: 'Color' },
+            { id: 'animation', icon: Activity, label: 'Animation' },
           ].map(({ id, icon: Icon, label }) => (
             <button
               key={id}
@@ -340,8 +527,11 @@ export default function ThumbnailEditor({ initial = {} }) {
             {generating ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
             {generating ? 'Generating…' : 'AI Generate'}
           </button>
+          <button onClick={applyToDashboard} className="flex items-center gap-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-xs font-bold text-emerald-400 hover:bg-emerald-500 hover:text-black transition">
+            <Check className="h-3.5 w-3.5" /> Apply as Banner
+          </button>
           <button onClick={exportCanvas} className="flex items-center gap-2 rounded-2xl bg-cyan-400 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-300 transition">
-            <Download className="h-3.5 w-3.5" /> Export PNG
+            <Download className="h-3.5 w-3.5" /> Download Poster
           </button>
         </div>
       </div>
@@ -506,6 +696,52 @@ export default function ThumbnailEditor({ initial = {} }) {
                       );
                     })}
                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activePanel === 'animation' && (
+              <motion.div key="animation" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4">
+                <div className="space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Animation Style</p>
+                  <div className="space-y-2">
+                    {[
+                      { id: 'orbit', name: 'Cosmic Orbit', desc: 'Slow elegant rotation of particles and mesh.' },
+                      { id: 'pulse', name: 'Ethereal Pulse', desc: 'Rhythmic scaling/breathing motion.' },
+                      { id: 'warp', name: 'Warp Speed', desc: 'Accelerated particle stream moving forward.' },
+                      { id: 'flow', name: 'Fluid Flow', desc: 'Multidirectional sweeping wave rotation.' },
+                      { id: 'none', name: 'Static Mode', desc: 'Freeze all rendering animations.' },
+                    ].map((anim) => (
+                      <button
+                        key={anim.id}
+                        onClick={() => setAnimationType(anim.id)}
+                        className={`w-full flex flex-col items-start gap-0.5 rounded-2xl border p-3 text-left transition ${
+                          animationType === anim.id
+                            ? 'border-cyan-400/50 bg-cyan-400/10 text-cyan-300 shadow-[0_4px_20px_rgba(34,211,238,0.1)]'
+                            : 'border-white/5 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <span className="text-xs font-black uppercase tracking-wider">{anim.name}</span>
+                        <span className="text-[10px] opacity-80 font-medium">{anim.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Animation Speed</label>
+                    <span className="text-[10px] font-mono font-bold text-cyan-300">{animationSpeed.toFixed(1)}x</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0.1"
+                    max="3.0"
+                    step="0.1"
+                    value={animationSpeed}
+                    onChange={(e) => setAnimationSpeed(parseFloat(e.target.value))}
+                    className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                  />
                 </div>
               </motion.div>
             )}

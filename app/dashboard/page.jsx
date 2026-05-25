@@ -4,13 +4,14 @@ export const dynamic = 'force-dynamic';
 
 import React, { useMemo } from "react";
 import nextDynamic from "next/dynamic";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 import {
   User, Activity, Clock, Film, Music, Gamepad2,
   Heart, Trash2, Play, Star, TrendingUp, Eye,
   ListMusic, LayoutGrid, Sparkles, Shield, Trophy,
-  ChevronRight, Radio, Zap
+  ChevronRight, Radio, Zap, Wand2, LogOut
 } from "lucide-react";
 import { useUserStore, useMusicStore } from "@/store";
 import BlurImage from "@/components/BlurImage";
@@ -128,6 +129,7 @@ export default function DashboardPage() {
   const {
     favorites, watchlist, recentlyPlayed,
     hoursPlayed, hoursWatched,
+    customBanner,
     removeFavorite, removeFromWatchlist
   } = useUserStore();
   const { setCurrentTrack } = useMusicStore();
@@ -188,7 +190,11 @@ export default function DashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden rounded-3xl border border-slate-800 p-8"
         style={{
-          background: "linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(6,182,212,0.08) 50%, rgba(236,72,153,0.08) 100%)"
+          background: customBanner
+            ? `linear-gradient(rgba(2, 6, 23, 0.5), rgba(2, 6, 23, 0.8)), url(${customBanner})`
+            : "linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(6,182,212,0.08) 50%, rgba(236,72,153,0.08) 100%)",
+          backgroundSize: "cover",
+          backgroundPosition: "center"
         }}
       >
         {/* grid lines */}
@@ -221,6 +227,15 @@ export default function DashboardPage() {
             </div>
             <h1 className="text-3xl font-black text-white tracking-tight">{realName}</h1>
             <p className="text-slate-400 text-sm mt-1">Your personal entertainment command center</p>
+            {/* Mobile-only logout button */}
+            <div className="mt-3 md:hidden">
+              <SignOutButton redirectUrl="/">
+                <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-widest bg-rose-950/40 hover:bg-rose-900 border border-rose-800/45 text-rose-300 hover:text-white smooth-transition">
+                  <LogOut className="w-3.5 h-3.5" />
+                  Log Out
+                </button>
+              </SignOutButton>
+            </div>
           </div>
 
           {/* quick stat badges */}
@@ -233,6 +248,12 @@ export default function DashboardPage() {
               <Trophy className="w-3.5 h-3.5 text-amber-400" />
               {favorites.length + watchlist.length} total saved items
             </div>
+            <SignOutButton redirectUrl="/">
+              <button className="flex items-center gap-2 mt-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase tracking-widest bg-rose-950/40 hover:bg-rose-900 border border-rose-800/45 text-rose-300 hover:text-white smooth-transition">
+                <LogOut className="w-3.5 h-3.5" />
+                Log Out
+              </button>
+            </SignOutButton>
           </div>
         </div>
       </motion.div>
@@ -349,24 +370,49 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4"
+            className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
           >
             {[
-              { icon: Heart, label: "Favourite Songs",  value: favSongs.length,   color: "text-rose-400",   link: "#favorites" },
-              { icon: Film,  label: "Saved Movies",     value: watchlist.length,  color: "text-purple-400", link: "#watchlist" },
-              { icon: Radio, label: "Listening Streak", value: "7 days",          color: "text-cyan-400",   link: "#" },
-            ].map(({ icon: Icon, label, value, color }) => (
-              <div key={label} className="flex items-center gap-4 p-4 rounded-2xl border border-slate-800 bg-slate-900/30 hover:bg-slate-900/60 cursor-pointer smooth-transition group">
-                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 group-hover:border-slate-700 smooth-transition">
-                  <Icon className={`w-5 h-5 ${color}`} />
+              { icon: Heart, label: "Favourite Songs",  value: favSongs.length,   color: "text-rose-400",   onClick: () => setActiveTab("favorites") },
+              { icon: Film,  label: "Saved Movies",     value: watchlist.length,  color: "text-purple-400", onClick: () => setActiveTab("watchlist") },
+              { icon: Wand2, label: "AI Studio",        value: "Launch",          color: "text-cyan-400",   href: "/thumbnails" },
+              { icon: Radio, label: "Listening Streak", value: "7 days",          color: "text-emerald-400", onClick: () => {} },
+            ].map(({ icon: Icon, label, value, color, onClick, href }) => {
+              const cardContent = (
+                <>
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 group-hover:border-slate-700 smooth-transition">
+                    <Icon className={`w-5 h-5 ${color}`} />
+                  </div>
+                  <div>
+                    <p className="text-lg font-black font-mono text-white">{value}</p>
+                    <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-slate-700 ml-auto group-hover:text-slate-400 smooth-transition" />
+                </>
+              );
+
+              if (href) {
+                return (
+                  <Link
+                    key={label}
+                    href={href}
+                    className="flex items-center gap-4 p-4 rounded-2xl border border-slate-800 bg-slate-900/30 hover:bg-slate-900/60 cursor-pointer smooth-transition group"
+                  >
+                    {cardContent}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={label}
+                  onClick={onClick}
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-slate-800 bg-slate-900/30 hover:bg-slate-900/60 cursor-pointer smooth-transition group"
+                >
+                  {cardContent}
                 </div>
-                <div>
-                  <p className="text-lg font-black font-mono text-white">{value}</p>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">{label}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-700 ml-auto group-hover:text-slate-400 smooth-transition" />
-              </div>
-            ))}
+              );
+            })}
           </motion.div>
         </div>
       )}

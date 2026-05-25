@@ -57,6 +57,8 @@ export const useUserStore = create((set) => ({
   recentlyPlayed: [],
   hoursWatched: 24.5,
   hoursPlayed: 48.2,
+  customBanner: null,
+  setCustomBanner: (banner) => set({ customBanner: banner }),
   setSignedIn: (signedIn) => set({ signedIn }),
   addFavorite: (item) =>
     set((state) => {

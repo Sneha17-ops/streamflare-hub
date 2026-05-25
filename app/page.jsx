@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
-import { Film, Music, Gamepad2, Sparkles, ChevronRight, Star, Zap, Shield, Globe } from "lucide-react";
+import { Film, Music, Gamepad2, Sparkles, ChevronRight, Star, Zap, Shield, Globe, Wand2 } from "lucide-react";
 
 // ── Animated floating orb ────────────────────────────────────────────────────
 function Orb({ style }) {
@@ -95,6 +96,7 @@ function useTypewriter(words, speed = 80, pause = 2000) {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const { isLoaded, isSignedIn } = useUser();
   const words = ["Movies & Series", "Music & Playlists", "Retro Arcade Games", "Premium Content"];
   const typed = useTypewriter(words);
 
@@ -127,15 +129,22 @@ export default function LandingPage() {
       gradient: "from-amber-600/20 to-yellow-600/10",
       delay: 0.3,
     },
+    {
+      icon: Wand2,
+      title: "AI Thumbnail Studio",
+      desc: "Create premium poster designs. Generate AI visual art concepts, overlay drop shadow typography, and download high-resolution PNGs.",
+      gradient: "from-purple-600/20 to-cyan-600/10",
+      delay: 0.4,
+    },
   ];
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
 
       {/* ── BACKGROUND ORBS ───────────────────────────────────────────────── */}
-      <Orb style={{ width: 600, height: 600, top: "-10%", left: "-10%", background: "rgba(139,92,246,0.12)" }} />
-      <Orb style={{ width: 500, height: 500, top: "30%", right: "-15%", background: "rgba(6,182,212,0.08)" }} />
-      <Orb style={{ width: 400, height: 400, bottom: "10%", left: "20%", background: "rgba(236,72,153,0.07)" }} />
+      <Orb style={{ width: 600, height: 600, top: "-10%", left: "-10%", background: "rgba(29,78,216,0.12)" }} />
+      <Orb style={{ width: 500, height: 500, top: "30%", right: "-15%", background: "rgba(30,58,138,0.12)" }} />
+      <Orb style={{ width: 400, height: 400, bottom: "10%", left: "20%", background: "rgba(59,130,246,0.08)" }} />
 
       {/* ── GRID OVERLAY ──────────────────────────────────────────────────── */}
       <div
@@ -214,16 +223,31 @@ export default function LandingPage() {
           transition={{ delay: 0.6 }}
           className="flex flex-wrap items-center justify-center gap-4 mb-14"
         >
-          <SignInButton>
-            <button className="group relative flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-sm text-white overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}>
-              <span className="relative z-10 flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Sign In to Get Started
-                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </span>
-              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-          </SignInButton>
+          {!isLoaded ? (
+            <div className="w-48 h-12 rounded-2xl bg-slate-800/40 animate-pulse" />
+          ) : isSignedIn ? (
+            <Link href="/dashboard">
+              <button className="group relative flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-sm text-white overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}>
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Go to Dashboard
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </Link>
+          ) : (
+            <SignInButton>
+              <button className="group relative flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-sm text-white overflow-hidden shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500" style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}>
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Sign In to Get Started
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </SignInButton>
+          )}
         </motion.div>
 
         {/* Feature pills */}
@@ -287,7 +311,7 @@ export default function LandingPage() {
             Everything. In one place.
           </motion.h2>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
           {cards.map((c) => (
             <PlatformCard key={c.title} {...c} />
           ))}
@@ -356,16 +380,31 @@ export default function LandingPage() {
             <p className="text-slate-400 text-base mb-10 max-w-md mx-auto leading-relaxed">
               Join StreamFlare and unlock the full cinematic entertainment experience.
             </p>
-            <SignInButton>
-              <button
-                className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-base text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500"
-                style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
-              >
-                <Sparkles className="w-5 h-5" />
-                Sign In to StreamFlare
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </SignInButton>
+            {!isLoaded ? (
+              <div className="mx-auto w-52 h-14 rounded-2xl bg-slate-800/40 animate-pulse" />
+            ) : isSignedIn ? (
+              <Link href="/dashboard">
+                <button
+                  className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-base text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500"
+                  style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Explore Your Dashboard
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </Link>
+            ) : (
+              <SignInButton>
+                <button
+                  className="inline-flex items-center gap-3 px-10 py-4 rounded-2xl font-bold text-base text-white shadow-[0_0_40px_rgba(139,92,246,0.4)] hover:shadow-[0_0_60px_rgba(139,92,246,0.6)] transition-all duration-500"
+                  style={{ background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" }}
+                >
+                  <Sparkles className="w-5 h-5" />
+                  Sign In to StreamFlare
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </SignInButton>
+            )}
           </div>
         </motion.div>
       </section>

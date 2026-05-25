@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { SignIn, useUser } from "@clerk/nextjs";
-import { motion, AnimatePresence } from "framer-motion";
+import { SignUp, useUser } from "@clerk/nextjs";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Film, Music, Gamepad2, Sparkles, Shield, Zap, Star } from "lucide-react";
@@ -65,7 +65,7 @@ function FeatureBadge({ icon: Icon, label, color, delay }) {
   );
 }
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const { user, isSignedIn } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,7 +78,7 @@ export default function SignInPage() {
     fetch("/api/analytics/track", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ event: "sign_in_page_view" }),
+      body: JSON.stringify({ event: "sign_up_page_view" }),
     }).catch(() => {});
   }, []);
 
@@ -87,7 +87,7 @@ export default function SignInPage() {
       fetch("/api/analytics/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: "sign_in", meta: { userId: user.id } }),
+        body: JSON.stringify({ event: "sign_up", meta: { userId: user.id } }),
       }).catch(() => {});
     }
   }, [isSignedIn, user]);
@@ -184,7 +184,7 @@ export default function SignInPage() {
             </h1>
             <p className="text-slate-400 text-lg leading-relaxed max-w-md">
               Movies, music, and retro arcade games — all in one beautifully crafted, AI-powered hub.
-              Sign in to unlock the complete experience.
+              Sign up to unlock the complete experience.
             </p>
           </motion.div>
 
@@ -252,14 +252,14 @@ export default function SignInPage() {
           {/* Header */}
           <div className="mb-8 text-center lg:text-left">
             <h2 className="text-3xl font-black text-white mb-2 tracking-tight">
-              Welcome back
+              Create Account
             </h2>
             <p className="text-slate-400 text-sm">
-              Sign in to access your personal entertainment hub
+              Sign up to access your personal entertainment hub
             </p>
           </div>
 
-          {/* Clerk sign-in card */}
+          {/* Clerk sign-up card */}
           <div
             className="rounded-3xl overflow-hidden"
             style={{
@@ -275,9 +275,9 @@ export default function SignInPage() {
             </div>
 
             <div className="px-4 pb-6">
-              <SignIn
+              <SignUp
                 routing="path"
-                path="/sign-in"
+                path="/sign-up"
                 appearance={{
                   variables: {
                     colorPrimary: "#9b5cff",

@@ -3,11 +3,12 @@ export const dynamic = 'force-dynamic';
 
 
 import React from "react";
-import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
+import { useUser, SignOutButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
-import { Activity, BadgeCheck, Crown, Heart, Music, Gamepad2, Film, Sparkles } from "lucide-react";
+import { Activity, BadgeCheck, Crown, Heart, Music, Gamepad2, Film, Sparkles, LogOut, ArrowUpRight } from "lucide-react";
 import { useUserStore } from "@/store";
-import { SectionHeader, GlassPanel, StatTile } from "@/components/ImmersiveKit";
+import { GlassPanel, StatTile } from "@/components/ImmersiveKit";
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -16,13 +17,32 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8 pb-12">
-      <SectionHeader
-        kicker="User Progress"
-        title={`Welcome back, ${displayName}`}
-        subtitle="Track progression, favorite content, and the engagement loop that powers badges, XP, and social ranking."
-        actionHref="/dashboard"
-        actionLabel="Open dashboard"
-      />
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl space-y-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.3em] text-slate-300">
+            <Sparkles className="h-3 w-3 text-cyan-300 animate-pulse" />
+            User Progress
+          </div>
+          <h1 className="text-3xl font-black tracking-tight text-white md:text-5xl">
+            Welcome back, {displayName}
+          </h1>
+          <p className="max-w-xl text-sm leading-6 text-slate-400">
+            Track progression, favorite content, and the engagement loop that powers badges, XP, and social ranking.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/dashboard" className="group inline-flex items-center gap-2 self-start rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-bold uppercase tracking-[0.25em] text-slate-200 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-white">
+            Open dashboard
+            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </Link>
+          <SignOutButton redirectUrl="/">
+            <button className="group inline-flex items-center gap-2 self-start rounded-2xl border border-rose-800/40 bg-rose-950/20 px-4 py-3 text-xs font-bold uppercase tracking-[0.25em] text-rose-300 hover:text-white transition hover:border-rose-500 hover:bg-rose-950/60">
+              Log Out
+              <LogOut className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          </SignOutButton>
+        </div>
+      </div>
 
       <div className="grid gap-4 md:grid-cols-4">
         <StatTile label="Hours watched" value={hoursWatched.toFixed?.(1) || hoursWatched} icon={Film} tone="cyan" />

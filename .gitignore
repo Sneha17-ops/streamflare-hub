@@ -10,7 +10,7 @@ out/
 analytics.log
 
 # production
-build/
+build/docker stop <container-id>
 
 # env files
 .env

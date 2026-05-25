@@ -132,10 +132,10 @@ export default function ThreeBackground() {
         };
       }
       if (p.includes("/music") || p.includes("/rooms")) {
-        // Spatial Audio theme: Electric Cyan & Blue highlights over dark navy/slate
+        // Spatial Audio theme: Dark Blue & Indigo highlights over dark navy/slate
         return {
-          primary: new THREE.Color("#22d3ee"), // cyan
-          secondary: new THREE.Color("#10b981"), // emerald/teal
+          primary: new THREE.Color("#1e3a8a"), // dark blue
+          secondary: new THREE.Color("#3b82f6"), // blue
           ambient: new THREE.Color("#020617"), // dark navy/slate
         };
       }
@@ -155,11 +155,11 @@ export default function ThreeBackground() {
           ambient: new THREE.Color("#78350f"), // brown
         };
       }
-      // Default: Deep Purple nebula
+      // Default: Dark Blue nebula
       return {
-        primary: new THREE.Color("#a855f7"), // purple
-        secondary: new THREE.Color("#6366f1"), // indigo
-        ambient: new THREE.Color("#1e1b4b"), // dark indigo
+        primary: new THREE.Color("#1e40af"), // dark blue
+        secondary: new THREE.Color("#3b82f6"), // blue
+        ambient: new THREE.Color("#030712"), // very dark blue-black
       };
     };
 
